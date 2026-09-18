@@ -7,7 +7,7 @@
   <meta name="description" content="用可编辑的中文行程，慢慢认识圣彼得堡与莫斯科。景点与餐饮、当天地图、Yandex 步行与公交导航和离线旅行手册，两座城市分别保存行程。">
   <title>去俄看看 · 我的彼得堡行程</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="styles.css?v=20260918-general">
+  <link rel="stylesheet" href="styles.css?v=20260918-ui2">
   <script src="food-data.js?v=20260914-spb-short" defer></script>
   <script src="visit-data.js?v=20260918-general" defer></script>
   <script src="data.js?v=20260918-general" defer></script>
@@ -15,7 +15,7 @@
   <script src="planner.js?v=20260918-general" defer></script>
   <script src="share.js?v=20260918-general" defer></script>
   <script src="qr.js?v=20260918-general" defer></script>
-  <script src="app.js?v=20260918-general" defer></script>
+  <script src="app.js?v=20260918-ui2" defer></script>
 </head>
 <body id="top">
   <a class="skip-link" href="#workspace">跳到行程规划</a>
@@ -29,13 +29,13 @@
       <p id="city-summary" class="city-summary" role="status">两座城市分别保存行程</p>
     </div>
     <section class="intro" aria-labelledby="page-title">
-      <div><p class="eyebrow"><span class="live-dot" aria-hidden="true"></span><span id="city-label">圣彼得堡 · SAINT PETERSBURG</span></p><h1 id="page-title">彼得堡，<em>按你的节奏走。</em></h1><p class="intro-copy">从一份参考路线开始，把想去的地方排进自己的每一天。</p></div>
-      <div class="edition"><span>THE CITY NOTEBOOK</span><strong id="city-edition">01 / 彼得堡</strong><span id="city-tagline">宫殿 · 街巷 · 河岸 · 海风</span></div>
+      <div class="intro-main"><p class="eyebrow"><span class="live-dot" aria-hidden="true"></span><span id="city-label">圣彼得堡 · SAINT PETERSBURG</span></p><h1 id="page-title">彼得堡，<em>按你的节奏走。</em></h1><p id="intro-copy" class="intro-copy">从一份参考路线开始，把想去的地方排进自己的每一天。</p><div class="intro-actions"><button class="button hero-primary" id="hero-start" type="button"><span id="hero-start-label">从 5 日路线开始</span><span aria-hidden="true">→</span></button><button class="text-button hero-secondary" id="hero-explore" type="button">先看看有什么 ↓</button></div></div>
+      <div class="edition" aria-label="城市行程概览"><div class="edition-top"><span>THE CITY NOTEBOOK</span><span class="edition-live">EDITABLE</span></div><strong id="city-edition">01 / 彼得堡</strong><span id="city-tagline">宫殿 · 街巷 · 河岸 · 海风</span><div class="hero-route" aria-hidden="true"><span>START</span><i></i><i></i><i></i><span>YOUR WAY</span></div><div class="hero-stats"><div><strong id="hero-place-count">17</strong><span>个地点</span></div><div><strong id="hero-food-count">9</strong><span id="hero-food-label">处餐饮</span></div><div><strong>2</strong><span>座城市</span></div></div></div>
     </section>
     <div class="plan-toolbar">
       <div class="preset-group"><label for="preset-select">从这里开始</label><select id="preset-select" aria-describedby="preset-description"><option value="short">3 日 · 市区精华</option><option value="four">4 日 · 市区与夏宫</option><option value="classic" selected>5 日 · 市区与双宫</option><option value="art">5 日 · 艺术与花园</option></select><button class="button small" id="apply-preset" type="button">使用这份路线</button></div>
       <div class="trip-date-group"><label for="trip-start-date">出发日期 <span>可选</span></label><input id="trip-start-date" type="date" aria-describedby="trip-date-note"><span id="trip-date-note">填好后会显示每天对应日期</span></div>
-      <div class="save-group"><span id="save-status" role="status">行程保存在本机</span><button id="undo-button" class="text-button" type="button" disabled>↶ 撤销</button></div>
+      <div class="save-group"><span id="save-status" class="save-status" role="status" title="行程保存在当前浏览器">已保存</span><button id="undo-button" class="text-button" type="button" disabled>↶ 撤销</button></div>
     </div>
     <p id="preset-description" class="preset-description" aria-live="polite" hidden></p>
     <nav class="mobile-tabs" aria-label="规划视图"><button data-view="discover" type="button" aria-pressed="false">景点与餐饮</button><button data-view="map" class="active" type="button" aria-pressed="true">看地图</button><button data-view="trip" type="button" aria-pressed="false">我的行程</button></nav>

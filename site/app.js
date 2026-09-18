@@ -51,7 +51,7 @@
   function save() {
     try { localStorage.setItem(storageKey, JSON.stringify(plan)); saveAvailable = true; } catch (_) { saveAvailable = false; }
     try { localStorage.setItem(cityPreferenceKey, data.city.id); } catch (_) {}
-    $('save-status').textContent = saveAvailable ? data.city.shortName + '行程已保存到这台设备' : '本机保存受限，请导出行程';
+    $('save-status').textContent = saveAvailable ? '已保存' : '保存受限';
   }
   function renderCity() {
     const city = data.city;
@@ -59,9 +59,13 @@
     document.title = '去俄看看 · 我的' + city.shortName + '行程';
     $('city-label').textContent = city.name + ' · ' + city.englishName;
     $('page-title').innerHTML = esc(city.shortName) + '，<em>按你的节奏走。</em>';
+    $('intro-copy').textContent = city.id === 'moscow' ? '从红场、画廊和河岸开始，也可以把一天留给莫斯科郊外。' : '从宫殿、街巷和河岸开始，把想去的地方排进自己的每一天。';
     $('city-edition').textContent = city.edition;
     $('city-tagline').textContent = city.tagline;
-    $('city-summary').textContent = data.attractions.length + ' 个景点' + (hasFood ? ' · ' + data.foodPlaces.length + ' 处餐饮' : '') + ' · 两座城市分别保存行程';
+    $('city-summary').textContent = data.attractions.length + ' 个地点' + (hasFood ? ' · ' + data.foodPlaces.length + ' 处餐饮' : '') + ' · 选一座城市，开始安排';
+    $('hero-place-count').textContent = data.attractions.length;
+    $('hero-food-count').textContent = hasFood ? data.foodPlaces.length : '—';
+    $('hero-food-label').textContent = hasFood ? '处餐饮' : '餐饮待补';
     document.querySelectorAll('[data-city]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.city === city.id)));
     $('preset-select').innerHTML = Object.entries(data.presets).map(([id, preset]) => '<option value="' + id + '"' + (id === 'classic' ? ' selected' : '') + '>' + esc(preset.label) + '</option>').join('');
     renderPresetDescription();
@@ -76,6 +80,8 @@
     const description = data.presets[$('preset-select').value]?.description;
     $('preset-description').textContent = description ? '这份参考路线：' + description : '';
     $('preset-description').hidden = !description;
+    const label = data.presets[$('preset-select').value]?.label || '参考路线';
+    $('hero-start-label').textContent = '从 ' + label.split(' · ')[0] + '路线开始';
   }
   function switchCity(id) {
     if (!knownCity(id) || id === data.city.id) return;
@@ -479,6 +485,8 @@
   });
   $('preset-select').addEventListener('change', renderPresetDescription);
   $('apply-preset').addEventListener('click', () => { commit(core.createPlan($('preset-select').value), '已换用参考路线，原计划可以撤销恢复'); });
+  $('hero-start').addEventListener('click', () => { $('apply-preset').click(); $('workspace').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+  $('hero-explore').addEventListener('click', () => { switchView('discover'); $('workspace').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
   $('undo-button').addEventListener('click', () => { if (!history.length) return; plan = history.pop(); mapView = 'day'; save(); render(); toast('已恢复上一步'); });
   $('add-day').addEventListener('click', () => commit(core.addDay(plan), '增加了一天，挑些喜欢的地方加入吧'));
   $('delete-day').addEventListener('click', () => commit(core.deleteDay(plan,plan.selectedDay), '已删除当天，地点仍在清单中，可以撤销'));
