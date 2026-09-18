@@ -12,13 +12,15 @@ function loadQr() {
 test('local QR renderer draws an encoded share URL without network access', () => {
   const qr = loadQr();
   const darkModules = [];
+  const colors = [];
   const canvas = {
     width: 220,
     height: 220,
     style: {},
     getContext() {
       return {
-        fillStyle: '',
+        set fillStyle(value) { colors.push(value); },
+        get fillStyle() { return colors.at(-1); },
         imageSmoothingEnabled: true,
         fillRect(...args) { darkModules.push(args); }
       };
@@ -30,4 +32,5 @@ test('local QR renderer draws an encoded share URL without network access', () =
   assert.equal(canvas.width, 220);
   assert.equal(canvas.height, 220);
   assert.ok(darkModules.length > 100);
+  assert.deepEqual(colors.slice(0, 2), ['#faf7ee', '#26352d']);
 });

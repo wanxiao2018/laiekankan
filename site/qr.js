@@ -1306,9 +1306,9 @@ module.exports = QRCode;
       const ctx = canvas.getContext('2d');
       if (!ctx) throw new Error('Canvas 2D context is unavailable');
       ctx.imageSmoothingEnabled = false;
-      ctx.fillStyle = settings.color?.light || '#ffffff';
+      ctx.fillStyle = settings.color?.light || '#faf7ee';
       ctx.fillRect(0, 0, size, size);
-      ctx.fillStyle = settings.color?.dark || '#000000';
+      ctx.fillStyle = settings.color?.dark || '#26352d';
       for (let row = 0; row < count; row++) {
         for (let col = 0; col < count; col++) {
           if (qr.isDark(row, col)) ctx.fillRect(offset + col * scale, offset + row * scale, scale, scale);
@@ -1322,4 +1322,3 @@ module.exports = QRCode;
   }
   root.QRCode = { toCanvas: draw };
 })(typeof globalThis !== 'undefined' ? globalThis : this);
-

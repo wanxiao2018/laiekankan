@@ -368,7 +368,7 @@
     note.textContent = localPreview ? '当前是本地预览地址，其他设备无法直接打开；发布到 GitHub Pages 后请重新生成二维码。' : '扫描二维码打开这份行程。';
     canvas.hidden = false;
     if (window.QRCode?.toCanvas) {
-      window.QRCode.toCanvas(canvas, url, { width: 220, margin: 2, errorCorrectionLevel: 'M' }, error => {
+      window.QRCode.toCanvas(canvas, url, { width: 220, margin: 2, errorCorrectionLevel: 'M', color: { dark: '#26352d', light: '#faf7ee' } }, error => {
         if (error) { canvas.hidden = true; note.textContent = '二维码暂时生成失败，请复制上方链接。'; }
       });
     } else {
