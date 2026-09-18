@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#823f43">
+  <meta name="description" content="用可编辑的中文行程，慢慢认识圣彼得堡与莫斯科。景点与餐饮、当天地图、Yandex 步行与公交导航和离线旅行手册，两座城市分别保存行程。">
+  <title>去俄看看 · 我的彼得堡行程</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css?v=20260918-general">
+  <script src="food-data.js?v=20260914-spb-short" defer></script>
+  <script src="visit-data.js?v=20260918-general" defer></script>
+  <script src="data.js?v=20260918-general" defer></script>
+  <script src="moscow-data.js?v=20260918-general" defer></script>
+  <script src="planner.js?v=20260918-general" defer></script>
+  <script src="share.js?v=20260918-general" defer></script>
+  <script src="qr.js?v=20260918-general" defer></script>
+  <script src="app.js?v=20260918-general" defer></script>
+</head>
+<body id="top">
+  <a class="skip-link" href="#workspace">跳到行程规划</a>
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="去俄看看首页"><span class="brand-mark" aria-hidden="true">俄</span><span>去俄看看<small>RUSSIA, AT YOUR OWN PACE</small></span></a>
+    <div class="header-actions"><button class="text-button" id="about-button" type="button">关于这份地图</button><button class="button outline share-button" data-share-plan type="button" aria-label="分享这份行程"><span class="share-button-icon" aria-hidden="true">↗</span><span class="share-button-label">分享行程</span></button><button class="button outline export-button" type="button"><span aria-hidden="true">↗</span> 导出行程</button></div>
+  </header>
+  <main>
+    <div class="city-bar">
+      <div id="city-switch" class="city-switch" role="group" aria-label="选择旅行城市"><button type="button" data-city="spb" aria-pressed="true"><span aria-hidden="true">01</span> 圣彼得堡</button><button type="button" data-city="moscow" aria-pressed="false"><span aria-hidden="true">02</span> 莫斯科</button></div>
+      <p id="city-summary" class="city-summary" role="status">两座城市分别保存行程</p>
+    </div>
+    <section class="intro" aria-labelledby="page-title">
+      <div><p class="eyebrow"><span class="live-dot" aria-hidden="true"></span><span id="city-label">圣彼得堡 · SAINT PETERSBURG</span></p><h1 id="page-title">彼得堡，<em>按你的节奏走。</em></h1><p class="intro-copy">从一份参考路线开始，把想去的地方排进自己的每一天。</p></div>
+      <div class="edition"><span>THE CITY NOTEBOOK</span><strong id="city-edition">01 / 彼得堡</strong><span id="city-tagline">宫殿 · 街巷 · 河岸 · 海风</span></div>
+    </section>
+    <div class="plan-toolbar">
+      <div class="preset-group"><label for="preset-select">从这里开始</label><select id="preset-select" aria-describedby="preset-description"><option value="short">3 日 · 市区精华</option><option value="four">4 日 · 市区与夏宫</option><option value="classic" selected>5 日 · 市区与双宫</option><option value="art">5 日 · 艺术与花园</option></select><button class="button small" id="apply-preset" type="button">使用这份路线</button></div>
+      <div class="trip-date-group"><label for="trip-start-date">出发日期 <span>可选</span></label><input id="trip-start-date" type="date" aria-describedby="trip-date-note"><span id="trip-date-note">填好后会显示每天对应日期</span></div>
+      <div class="save-group"><span id="save-status" role="status">行程保存在本机</span><button id="undo-button" class="text-button" type="button" disabled>↶ 撤销</button></div>
+    </div>
+    <p id="preset-description" class="preset-description" aria-live="polite" hidden></p>
+    <nav class="mobile-tabs" aria-label="规划视图"><button data-view="discover" type="button" aria-pressed="false">景点与餐饮</button><button data-view="map" class="active" type="button" aria-pressed="true">看地图</button><button data-view="trip" type="button" aria-pressed="false">我的行程</button></nav>
+    <div class="workspace" id="workspace">
+      <section class="pane discover-pane" data-pane="discover" aria-labelledby="discover-heading">
+        <div class="pane-heading"><h2 id="discover-heading">想去的地方</h2><span class="count" id="place-count"></span></div>
+        <div class="search-wrap"><span aria-hidden="true">⌕</span><input type="search" id="place-search" placeholder="搜索景点、餐厅、俄语名" aria-label="搜索景点与餐饮"></div>
+        <div id="category-filters" class="category-filters" role="group" aria-label="地点分类"></div>
+        <div id="food-filters" class="food-filters" role="group" aria-label="餐饮类型" hidden></div>
+        <p id="food-catalog-note" class="food-catalog-note" hidden>每条对应一家具体门店；可插入当天行程，或安排在不同天。</p>
+        <div id="place-list" class="place-list"></div>
+        <p id="catalog-note" class="catalog-note">挑选景点或餐饮，在地图下方加入当天。</p>
+      </section>
+      <section class="pane map-pane pane-active" data-pane="map" aria-label="当天路线地图与地点详情">
+        <div class="map-day-picker"><label for="map-day-select">地图行程</label><select id="map-day-select"></select></div>
+        <div class="map-heading">
+          <div class="map-view-switch" role="group" aria-label="地图内容"><button type="button" data-map-view="day" aria-pressed="true">当天行程</button><button type="button" data-map-view="place" aria-pressed="false">地点位置</button></div>
+          <label class="map-mode-picker"><span class="sr-only">当天地图显示方式</span><select id="map-display-mode"><option value="overview">位置总览</option><option value="walking">步行路线</option></select></label>
+        </div>
+        <div class="map-frame-wrap">
+          <iframe id="place-map" title="当天行程的 Yandex 地图" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+          <div id="map-loading" class="map-loading" role="status" hidden><span class="map-loading-dot" aria-hidden="true"></span><p id="map-loading-label">正在加载 Yandex 地图…</p></div>
+          <div id="map-empty" class="map-empty" hidden><span class="empty-map-mark" aria-hidden="true">＋</span><h3>这一天还没有安排</h3><p>加入想去的地方，就能在这里看到当天路线。</p><button id="map-pick-place" class="button outline" type="button">去选地点</button></div>
+        </div>
+        <div class="map-caption"><span id="map-heading-name" role="status"></span><a id="map-external" target="_blank" rel="noopener noreferrer">Yandex 导航</a></div>
+        <ol class="map-route-preview" id="map-route-preview" aria-label="当天行程顺序"></ol>
+        <div class="map-help"><span id="map-help-text">地图中的交通时间不含游览和用餐。</span><button class="text-button" id="reload-map" type="button">刷新地图</button></div>
+        <div id="place-detail" class="place-detail"></div>
+        <section id="day-dining" class="day-dining" aria-label="搭配当天的餐饮"></section>
+      </section>
+      <section class="pane trip-pane" data-pane="trip" aria-labelledby="trip-heading">
+        <div class="pane-heading"><h2 id="trip-heading">我的行程</h2><span class="count" id="trip-count"></span></div>
+        <div class="day-picker"><label class="sr-only" for="day-select">当前编辑的日期</label><select id="day-select"></select><button class="icon-button" id="add-day" type="button" aria-label="增加一天" title="增加一天">＋</button></div>
+        <div class="day-heading"><div><span class="eyebrow" id="day-kicker"></span><h3 id="day-title"></h3></div><button class="text-button delete-day" id="delete-day" type="button">删除当天</button></div>
+        <ol class="route-list" id="route-list"></ol>
+        <p class="route-note" id="route-note">可以调整顺序，留点时间慢慢走。</p>
+        <div class="trip-mode-picker"><label for="trip-map-mode">地图显示</label><select id="trip-map-mode"><option value="overview">位置总览</option><option value="walking">步行路线</option></select><button class="text-button" id="view-day-map" type="button">查看地图</button></div>
+        <div class="trip-actions"><a class="button" id="navigate-day" target="_blank" rel="noopener noreferrer">Yandex 分段导航</a><a class="button outline" id="navigate-full-day" target="_blank" rel="noopener noreferrer">整天步行导航 · Yandex ↗</a><button class="button outline share-button" data-share-plan type="button">分享这份行程</button><button class="button outline export-button" type="button">导出离线行程</button></div>
+        <p class="navigation-note" id="navigation-note">相近地点可串联步行；每段都可选择步行或公交／地铁。</p>
+        <p class="planning-note">参考路线可自由调整。演出、开放日期和季节项目，请在出发前确认。</p>
+      </section>
+    </div>
+    <div class="bottom-note"><span>把时间留给喜欢的地方。</span><span>中文与俄语地名 · 本机保存 · 离线手册</span></div>
+  </main>
+  <footer class="site-footer"><a class="footer-brand" href="#top">去俄看看</a><span>一份随旅行慢慢长大的地图。</span><button class="text-button" id="sources-button" type="button">信息与来源</button></footer>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <dialog id="info-dialog" class="dialog" aria-labelledby="dialog-title"><div class="dialog-top"><h2 id="dialog-title"></h2><button class="icon-button" id="close-dialog" type="button" aria-label="关闭对话框">×</button></div><div id="dialog-content"></div></dialog>
+  <dialog id="share-dialog" class="dialog share-dialog" aria-labelledby="share-dialog-title"><div class="dialog-top"><div><span class="dialog-kicker">SHARE YOUR ROUTE</span><h2 id="share-dialog-title">分享这份行程</h2></div><button class="icon-button" id="close-share-dialog" type="button" aria-label="关闭分享对话框">×</button></div><p>链接里只包含这份行程的城市、日期、地点和顺序，不包含本机其他保存内容。</p><div class="share-link-field"><label for="share-url">分享链接</label><div><input id="share-url" type="url" readonly><button class="button small" id="copy-share-link" type="button">复制</button></div></div><div class="share-qr-panel"><div class="qr-frame"><canvas id="share-qr" width="220" height="220" aria-label="行程分享二维码"></canvas></div><div class="share-qr-copy"><strong>用手机扫描</strong><p id="share-qr-note">扫描二维码打开这份行程。</p></div></div><button class="button outline" id="native-share" type="button" hidden>调用系统分享</button></dialog>
+  <noscript><p class="no-script">请启用 JavaScript，选择城市、景点和编辑行程。也可以直接在 Yandex 地图中搜索圣彼得堡或莫斯科的地点。</p></noscript>
+</body>
+</html>
