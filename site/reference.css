@@ -1,0 +1,128 @@
+/* Reference composition: blue glass, city photography and a compact three-pane planner. */
+:root{--ink:#092855;--muted:#617b9e;--accent:#087cff;--accent-light:#e1efff;--green:#087cff;--green-light:#eaf3ff;--line:#dbe7f5;--surface:#f8fbff;--serif:var(--sans)}
+body{background:#c5ddf3 url('cover.png') center top / cover fixed no-repeat;color:var(--ink)}
+body:before{content:"";position:fixed;inset:0;background:linear-gradient(180deg,#edf6ff55,#e8f2ff88 60%,#dcecff55);pointer-events:none;z-index:-1}
+.site-header{position:relative;top:0;max-width:1224px;width:calc(100% - 100px);height:70px;margin:10px auto 0;padding:0 25px;border:1px solid #ffffffbb;border-radius:18px;background:#f4f9ffb3;box-shadow:0 8px 35px #5a8bbe12;backdrop-filter:blur(18px)}
+.brand{color:#08265a;font-size:25px;letter-spacing:2px;gap:12px}.brand-mark{width:47px;height:49px;border:0;background:none;border-radius:9px;overflow:hidden}.brand-mark img{width:100%;height:100%;object-fit:cover}.brand-copy small{color:#163962;font-size:10px;letter-spacing:0;font-weight:400}.top-nav a,.top-nav-button{color:#16345d}.top-nav a.active{background:#d4e9ff;color:#0756bb;border-radius:24px}.header-actions{gap:10px}.header-icon-button{background:#ffffff80;color:#163962}.header-actions .button{font-size:10px;min-height:34px;padding:6px 10px}
+main{max-width:1448px}.intro{display:grid;grid-template-columns:1fr 1fr;gap:46px;min-height:240px;padding:28px 9% 20px}.intro-main{display:flex;flex-direction:column;position:relative}.intro-main>.eyebrow{display:none}.intro h1{font-size:58px;font-weight:850;line-height:1.13;letter-spacing:5px;margin:0 0 8px;color:#052452}.hero-subtitle{order:1;font-size:23px;font-weight:750;letter-spacing:1px;white-space:nowrap}.intro-copy{order:2;font-size:14px;line-height:1.8;max-width:455px;margin-top:8px;color:#345986}.intro-actions{display:none}.intro-side{gap:16px}.city-bar{margin:0;padding:0}.city-bar-heading,.city-summary{display:none}.city-switch{gap:12px;padding:0;border:0;background:none;width:100%}.city-switch button{display:grid;grid-template-columns:72px 1fr;grid-template-rows:1fr 1fr;column-gap:16px;min-height:80px;border:1px solid #ffffffeb;border-radius:14px;background:#f4f8ff88;padding:5px;font-size:16px;color:#0d2c58;box-shadow:none}.city-switch button img{grid-row:1/3;width:72px;height:68px;border-radius:9px;object-fit:cover}.city-switch button small{grid-column:2;font-size:11px;align-self:start;color:#153861}.city-switch button[aria-pressed=true]{background:#eaf5ffb8;border:1px solid #078bff;color:#073575;box-shadow:0 0 0 3px #ffffffaa,0 6px 20px #2687ee22}.edition{padding:17px 20px;border:1px solid #ffffffdd;border-radius:20px;min-height:86px;background:#f7fbffba;box-shadow:0 10px 30px #4285bb15}.edition-top,.edition>strong,.edition>span,.hero-route{display:none}.hero-stats{border:0;margin:0;padding:0;display:flex;justify-content:space-between;gap:18px}.hero-stats>div{position:relative;padding-left:43px}.hero-stats>div:before{position:absolute;left:0;top:5px;content:'⌖';display:grid;place-items:center;width:34px;height:38px;background:#d4e8ff;border-radius:50%;color:#087cff;font-size:23px}.hero-stats>div:nth-child(2):before{content:'▤'}.hero-stats>div:nth-child(3):before{content:'♧'}.hero-stats strong{font:750 23px var(--sans);color:#073778}.hero-stats span{font-size:10px;color:#43618a;letter-spacing:0}
+.plan-toolbar{margin:0 5% 14px;padding:18px 24px;display:flex;gap:20px;border:1px solid #ffffffe0;border-radius:20px;background:#f2f8ffc4;backdrop-filter:blur(18px);box-shadow:0 8px 25px #3f73a51c}.planner-intro{flex:1}.planner-intro h2{font-size:20px}.planner-intro p{font-size:11px;color:#47678e;margin-top:5px}.preset-group{display:grid;grid-template-columns:175px 160px;gap:3px 15px}.preset-group label{grid-column:1;font-size:11px;color:#4b6d98}.preset-group select{grid-column:1;grid-row:2;border:0;background:#ffffffea;border-radius:10px;height:42px;font-size:12px}.preset-group .button{grid-column:2;grid-row:2;min-height:42px}.trip-date-group{padding:0;background:none;border:0;display:flex;flex-direction:column;align-items:start;gap:3px}.trip-date-group label{font-size:11px}.trip-date-group input{min-height:42px;width:158px;border:0;border-radius:10px;background:#fffffff0;color:#214778}.trip-date-group label span,#trip-date-note,.save-group{display:none}.preset-description{display:none}.button{background:linear-gradient(135deg,#0bafff,#0664ff);border-color:#0789ff;box-shadow:0 5px 14px #087cff16;border-radius:10px;color:white}.button.outline{background:#ffffffa8;color:#24436a;border-color:#d4e5fb}
+.workspace-shell{margin:0 3.3%;padding:10px 13px 13px;border:1px solid #ffffffd9;border-radius:22px;background:#edf6ffd1;backdrop-filter:blur(16px);box-shadow:0 14px 40px #35639124}.workspace-toolbar{margin:0 0 9px;gap:22px}.mobile-tabs{display:flex;gap:8px;flex:1}.mobile-tabs button{flex:1;min-height:58px;border:1px solid #ffffffb0;border-radius:13px;background:#f7faff66;color:#28476c;font-size:14px;font-weight:650}.mobile-tabs button:after{display:block;font-size:10px;font-weight:400;content:'查看推荐';color:#56759e}.mobile-tabs button[data-view=map]:after{content:'地图视图'}.mobile-tabs button[data-view=trip]:after{content:'行程编辑'}.mobile-tabs button.active{background:#e3f3ff;color:#087cff;border-color:#148cff;box-shadow:inset 0 0 0 3px #ffffffa0}.global-search{width:37%;margin:0}.global-search input{height:42px;background:#ffffffd4;border:1px solid #dfebfa;border-radius:12px}.workspace{margin:0;display:grid;grid-template-columns:minmax(240px, .95fr) minmax(300px,1.15fr) minmax(270px,1fr);gap:10px;align-items:stretch}.pane{background:#f8fbffcf;border:1px solid #fff;border-radius:13px;box-shadow:0 2px 4px #487fb513}.discover-pane,.trip-pane{position:static;max-height:560px;overflow:auto;grid-column:auto}.pane-heading{padding:12px 14px 8px}.pane-heading h2{font-size:13px;color:#082856}.category-filters{gap:4px;padding:0 12px 6px;border:0}.category-filters button{font-size:10px;padding:3px 9px;background:#ebf1f9;border-radius:6px;min-height:26px}.category-filters button[aria-pressed=true]{background:linear-gradient(135deg,#14b2ff,#0874ff);color:white;border-color:transparent}.place-list{height:424px;padding:0 10px;overflow:auto}.place-item{grid-template-columns:92px minmax(0,1fr);position:relative;gap:12px;padding:6px;margin:5px 0;background:#ffffff8c;border:1px solid #e2ebf7;border-radius:10px;box-shadow:none;min-height:88px}.place-thumbnail,.place-initial{width:92px;height:72px;border-radius:7px}.place-item-name{font-size:13px;color:#102e5c}.place-item-tag{font-size:10px;color:#6d82a0;margin:3px 0}.place-item-intro{font-size:10px}.place-day{display:none}.place-item.active{background:#eff7ff;border-color:#6eb2ff;box-shadow:none}.catalog-note{font-size:10px;padding:8px 14px}.map-pane{max-height:560px;overflow:auto}.map-day-picker{display:none}.map-heading{padding:7px 9px}.map-frame-wrap{height:330px}.map-view-switch{background:#e5efff;border-color:#d5e5fa}.map-caption{font-size:10px}.map-route-preview{padding-top:5px}.map-help{font-size:9px}.place-detail{padding:12px;max-height:260px;background:#ffffff90}.detail-image{float:left;width:75px;height:66px;margin:0 12px 10px 0;border-radius:8px}.place-detail h2{font-size:18px}.detail-intro{clear:both}.day-tabs{display:flex;gap:5px;padding:3px 12px 8px;overflow:auto}.day-tabs button{flex:1 0 82px;min-width:0;min-height:48px;padding:5px;border:1px solid #e5edf8;border-radius:8px;background:#eef3fa;color:#375173}.day-tabs strong{display:block;font-size:11px}.day-tabs span{display:block;font-size:9px;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.day-tabs button[aria-pressed=true]{background:#e5f4ff;border-color:#0784ff;color:#0078ff}.day-picker{padding:0 12px 5px;gap:7px}.day-picker select{font-size:11px;min-height:30px}.day-picker .icon-button{min-height:30px;height:30px}.day-heading{padding:6px 14px}.day-heading h3{font-size:12px}.day-heading .eyebrow{font-size:9px}.route-list,.trip-pane .route-list{padding:0 13px;max-height:258px;overflow:auto}.route-item{position:relative;min-height:78px;padding:8px 0 8px 105px}.route-number{position:absolute;left:0;top:18px;background:#d9ecff;color:#0678f9}.route-thumbnail{position:absolute;left:33px;top:9px;width:62px;height:49px;object-fit:cover;border-radius:6px}.route-place{font-size:12px;line-height:1.4}.route-time{font-size:9px}.route-item-controls{margin-top:3px;gap:4px}.route-item-controls button{font-size:9px;padding:1px 5px;min-height:21px;background:white}.route-note{font-size:9px;padding:6px 8px;margin-top:4px;background:#e8f2ff;border-color:#7ab5ff}.trip-mode-picker{padding-top:5px;font-size:10px}.trip-mode-picker select{min-height:28px;font-size:10px}.trip-export{display:flex;gap:6px;padding:9px 12px 0}.trip-export .button{flex:1;font-size:10px;padding:6px;min-height:35px}.trip-actions{padding:7px 12px 0;display:flex;flex-wrap:wrap}.trip-actions .button{flex:1;min-height:32px;font-size:9px}.navigation-note,.planning-note{font-size:9px;padding-top:4px}.planning-note{padding-bottom:9px}
+.share-strip{margin:10px 3.3%;padding:14px 24px 14px 130px;min-height:90px;border-radius:20px;background:linear-gradient(90deg,#eff6ff00,#eff6ffed 120px),url('assets/places/msk-basil.jpg') left center / 140px auto no-repeat,#f0f7ffd6;box-shadow:0 10px 26px #234a7215}.share-strip h2{font-size:19px;font-weight:700}.share-strip-action{background:#f7fbffc9;border-color:#d6e8ff;color:#1464bd;padding:12px 25px}.share-strip-icon{background:#dceeff;color:#087aff}.share-strip blockquote{font-style:italic;color:#557eac}.bottom-note{margin:8px 4%;font-size:10px}.site-footer{padding:12px 4%;font-size:10px}.bottom-note>span:first-child{color:#345c89}
+@media(min-width:1600px){.intro{padding-top:40px;padding-bottom:32px}.workspace-shell{margin-top:20px}}
+@media(max-width:1100px) and (min-width:761px){.site-header{width:94%;padding:0 15px}.top-nav a,.top-nav-button{padding:7px;font-size:11px}.brand{font-size:20px}.intro{padding:25px 5%;gap:22px}.intro h1{font-size:48px}.hero-subtitle{font-size:18px}.city-switch button{grid-template-columns:50px 1fr;font-size:13px;column-gap:8px}.city-switch button img{width:50px}.hero-stats>div{padding-left:0}.hero-stats>div:before{display:none}.planner-intro p{max-width:240px}.plan-toolbar{gap:12px;padding:16px}.preset-group{grid-template-columns:150px}.preset-group .button{grid-column:1;grid-row:3}.workspace{grid-template-columns: .9fr 1.1fr 1fr}.place-item{grid-template-columns:60px minmax(0,1fr);gap:7px}.place-thumbnail,.place-initial{width:60px;height:64px}.route-item{padding-left:29px}.route-thumbnail{display:none}.share-strip{gap:15px;grid-template-columns:1fr auto 1fr}}
+@media(max-width:760px){.site-header{width:calc(100% - 24px);height:64px;padding:0 12px}.brand{font-size:20px}.brand-mark{width:34px;height:40px}.intro{display:flex;flex-direction:column;gap:20px;padding:28px 20px 18px}.intro h1{font-size:45px}.hero-subtitle{font-size:17px;white-space:normal}.intro-copy{font-size:12px}.intro-side{margin:0;width:100%}.city-switch button{grid-template-columns:52px 1fr;font-size:13px;column-gap:9px}.city-switch button img{width:52px;height:58px}.city-switch button small{font-size:9px}.edition{min-height:78px;padding:14px}.hero-stats strong{font-size:20px}.hero-stats{gap:10px}.hero-stats>div{padding-left:30px}.hero-stats>div:before{width:25px;height:30px;font-size:18px}.plan-toolbar{display:grid;grid-template-columns:1fr 1fr;margin:0 12px 12px;padding:16px;gap:12px}.planner-intro{grid-column:1/-1}.planner-intro h2{font-size:18px}.preset-group{display:flex;flex-direction:column;align-items:stretch;gap:6px;min-width:0}.preset-group select{width:100%;font-size:12px}.preset-group .button{font-size:11px}.trip-date-group{margin:0;justify-content:start;gap:6px}.trip-date-group input{width:100%;min-width:0;font-size:14px}.workspace-shell{margin:0 12px;padding:9px}.workspace-toolbar{display:block}.mobile-tabs{gap:5px}.mobile-tabs button{min-height:51px;flex:1 1 0;font-size:12px}.global-search{width:100%;margin-top:8px}.global-search input{font-size:14px}.workspace{display:block}.pane{max-height:none}.place-list{height:auto}.place-item{grid-template-columns:85px minmax(0,1fr)}.place-thumbnail,.place-initial{width:85px;height:65px}.map-frame-wrap{height:340px}.place-detail{max-height:none}.trip-pane .route-list{max-height:none}.route-item{padding-left:108px}.share-strip{margin:12px;padding:18px 18px 18px 100px;background-size:auto,110px auto;min-height:130px}.share-strip-action{margin-top:8px;font-size:11px;padding:7px;min-height:36px}.share-strip blockquote{display:none}.share-strip h2{font-size:18px}.share-strip-kicker{font-size:7px}.bottom-note{margin:8px 15px}.site-footer{padding:12px 16px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important}}
+/* Keep route text in a single column beside the absolutely positioned photographs. */
+.route-item{display:block}.route-item:not(:last-child):before{left:12px;border-left-color:#b8d8ff}.save-group{display:flex;position:absolute;right:18px;bottom:-24px;gap:10px;font-size:9px}.plan-toolbar{position:relative;margin-bottom:30px}.save-group .text-button{font-size:10px;min-height:22px;padding:0}.save-status{color:#355d86}
+@media(max-width:760px){.save-group{margin:0;bottom:-22px}.plan-toolbar{margin-bottom:28px}}
+
+/* Shared outer edges and explicit tab panels on desktop as well as mobile. */
+.site-header{width:calc(min(100vw, 1448px) * .934);max-width:none}
+.plan-toolbar{margin-left:3.3%;margin-right:3.3%}
+.workspace-shell[data-active-view] .workspace{display:block}
+.workspace-shell[data-active-view] .pane{display:none}
+.workspace-shell[data-active-view] .pane.pane-active{display:block;max-height:none;overflow:visible}
+.workspace-shell[data-active-view] .place-list{height:auto;max-height:560px;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:6px}
+.workspace-shell[data-active-view] .map-frame-wrap{height:460px}
+.workspace-shell[data-active-view] .place-detail{max-height:none}
+.workspace-shell[data-active-view] .trip-pane .route-list{max-height:none}
+.workspace-shell[data-active-view] .day-tabs button{flex:0 1 160px}
+.site-footer{display:flex;justify-content:flex-end;max-width:1352px;padding:0 0 16px;border:0}
+.site-footer .text-button{color:#173d70;background:#f2f8ffeb;border:1px solid white;padding:5px 12px;border-radius:9px}
+@media(max-width:760px){.site-header{width:calc(100% - 24px)}.plan-toolbar{margin-left:12px;margin-right:12px}.site-footer{padding-right:12px}.workspace-shell[data-active-view] .map-frame-wrap{height:340px}.workspace-shell[data-active-view] .place-list{display:block;max-height:none}}
+/* Keep the cathedral and Spasskaya Tower visible in the Red Square thumbnails. */
+img[src*="msk-red-square.jpg"]{object-position:center}
+
+/* 中文界面覆盖旧版装饰副标题。 */
+.mobile-tabs button:after{content:'查看推荐'}
+.mobile-tabs button[data-view=overview]:after{content:'三栏总览'}
+.mobile-tabs button[data-view=map]:after{content:'地图视图'}
+.mobile-tabs button[data-view=trip]:after{content:'行程编辑'}
+.hero-route span:first-child{font-size:0}.hero-route span:first-child:after{content:'出发';font-size:inherit}
+.hero-route span:last-child{font-size:0}.hero-route span:last-child:after{content:'按你的方式';font-size:inherit}
+
+/* One shared glass surface anchors the title and destination controls. */
+.intro {
+  margin: 18px 3.3% 16px;
+  padding: 28px 32px;
+  min-height: 236px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 32px;
+  border: 1px solid rgba(255, 255, 255, .88);
+  border-radius: 22px;
+  background: linear-gradient(115deg, rgba(245, 250, 255, .84), rgba(235, 246, 255, .64));
+  box-shadow: 0 10px 30px rgba(47, 92, 140, .10);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+.intro-main { min-width: 0; }
+.intro h1 { font-size: clamp(40px, 4.2vw, 58px); }
+.hero-subtitle { font-size: clamp(17px, 1.65vw, 23px); white-space: normal; }
+.intro-side { width: 100%; gap: 14px; }
+.intro-side .city-bar { display: block; width: 100%; margin: 0; }
+.intro-side .city-switch {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  width: 100%;
+  gap: 12px;
+}
+.intro-side .city-switch button { min-width: 0; width: 100%; }
+.intro-side .city-switch button[aria-pressed=true] {
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .7), 0 6px 20px rgba(38, 135, 238, .12);
+}
+.intro-side .edition { width: 100%; border-radius: 14px; background: rgba(249, 252, 255, .72); }
+@media (max-width: 1100px) and (min-width: 761px) {
+  .intro { padding: 24px; gap: 24px; }
+}
+@media (max-width: 760px) {
+  .intro { margin: 14px 12px; padding: 22px 18px; gap: 22px; min-height: 0; border-radius: 20px; }
+  .intro h1 { font-size: 42px; }
+  .hero-subtitle { font-size: 17px; }
+  .intro-side .city-switch { gap: 8px; }
+}
+@media (max-width: 380px) {
+  .intro { padding: 20px 14px; }
+  .intro-side .city-switch button { grid-template-columns: 40px minmax(0, 1fr); column-gap: 6px; font-size: 12px; }
+  .intro-side .city-switch button img { width: 40px; }
+  .intro-side .city-switch button small { font-size: 8px; }
+}
+
+/* 总览入口始终保留，景点详情独立打开。 */
+.mobile-tabs button[data-view=overview]:after{content:'三栏总览'}
+.map-pane{display:flex;flex-direction:column}
+.map-pane .map-frame-wrap{height:405px;flex:1 0 330px}
+.place-dialog{width:min(580px,calc(100% - 28px));max-width:580px;max-height:calc(100dvh - 36px);padding:0;background:#f7fbff;overflow:auto;border:1px solid white;border-radius:20px;color:#102e5c}
+.place-dialog .dialog-top{position:sticky;top:0;z-index:1;padding:16px 20px;background:#f7fbfff5;border-bottom:1px solid #e0eafa}
+.place-dialog .dialog-top h2{font-size:21px}
+.place-dialog .place-detail{padding:18px 20px;max-height:none;overflow:visible;background:none}
+.place-card-heading{display:flex;gap:15px;align-items:flex-start}
+.place-card-heading>div{min-width:0}
+.place-dialog .detail-image{float:none;flex:0 0 104px;width:104px;height:110px;margin:0;object-fit:cover;border-radius:12px}
+.place-dialog .russian-name{font-size:11px;margin:0 0 8px;color:#617895}
+.place-dialog .detail-top{justify-content:flex-start;gap:12px;flex-wrap:wrap}
+.place-dialog .detail-intro{font-size:13px;line-height:1.75;margin:9px 0 0;color:#26496d}
+.place-facts{margin:18px 0 12px;background:#edf4fd;border-radius:12px;padding:3px 13px}
+.place-facts>div{display:grid;grid-template-columns:78px minmax(0,1fr);gap:10px;padding:11px 0;font-size:12px;line-height:1.65}
+.place-facts>div+div{border-top:1px solid #dce7f7}
+.place-facts dt{font-weight:650;color:#315778}.place-facts dd{margin:0;color:#25436a}
+.place-official{display:inline-block;font-size:13px;color:#066bee!important;font-weight:650;margin:0 0 6px}
+.place-dialog .visit-checked{display:block;font-size:10px;color:#75869f}
+.place-dialog .detail-actions{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 8px}
+.place-extra{font-size:10px;color:#68809b;margin-top:12px}.place-extra summary{cursor:pointer}.place-extra p{font-size:11px;margin:8px 0}.place-extra a{font-size:10px}
+@media(max-width:760px){
+  .mobile-tabs button{flex:1 1 0;min-width:0;font-size:11px;padding:6px 4px}
+  .workspace-shell:not([data-active-view]) .workspace{display:flex;flex-direction:column;gap:12px}
+  .workspace-shell:not([data-active-view]) .pane{display:block}
+  .workspace-shell:not([data-active-view]) .place-list{max-height:300px;overflow:auto}
+  .place-dialog .place-detail{padding:15px}.place-dialog .detail-image{width:78px;height:92px;flex-basis:78px}.place-facts>div{grid-template-columns:66px 1fr}.place-dialog .detail-actions .button{font-size:11px}
+}
+
+/* List summaries stay on one line; the detail card provides the complete text. */
+.place-item-intro{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;-webkit-line-clamp:unset}
+
+/* 覆盖旧版装饰文案，页面只保留中文。 */
+.mobile-tabs button:after{content:'查看推荐'}
+.mobile-tabs button[data-view=overview]:after{content:'三栏总览'}
+.mobile-tabs button[data-view=map]:after{content:'地图视图'}
+.mobile-tabs button[data-view=trip]:after{content:'行程编辑'}

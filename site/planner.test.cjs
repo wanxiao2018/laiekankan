@@ -5,31 +5,36 @@ const core = require('./planner.js');
 const moscow = require('./moscow-data.js');
 const moscowCore = core.createFor(moscow);
 
-test('Petersburg references fit three to five days while longer saved itineraries remain intact', () => {
-  assert.equal(data.attractions.length, 17);
-  assert.deepEqual(new Set(Object.values(data.presets).map(preset => preset.days.length)), new Set([3, 4, 5]));
-  for (const preset of Object.keys(data.presets)) {
-    const plan = core.createPlan(preset);
-    assert.ok(plan.days.length >= 3 && plan.days.length <= 5);
-    assert.match(data.presets[preset].label, new RegExp('^' + plan.days.length + ' 日'));
-    for (const day of plan.days) {
-      assert.ok(day.places.filter(id => core.place(id).area === 'outside').length <= 1);
-      assert.ok(!(day.places.includes('hermitage') && day.places.includes('russian-museum')));
+test('both cities offer two, three and four day routes with multiple valid stops per day', () => {
+  for (const [dataset, planner] of [[data, core], [moscow, moscowCore]]) {
+    assert.deepEqual(Object.values(dataset.presets).map(p => p.days.length), [2, 3, 4]);
+    assert.equal(planner.createPlan().days.length, 3);
+    for (const [key, preset] of Object.entries(dataset.presets)) {
+      const plan = planner.createPlan(key);
+      assert.match(preset.label, new RegExp('^' + plan.days.length + ' 日'));
+      const stops = plan.days.flatMap(day => day.places);
+      assert.equal(new Set(stops).size, stops.length);
+      for (const day of plan.days) {
+        assert.ok(day.places.length >= 2);
+        assert.ok(day.places.every(id => planner.place(id)));
+        assert.ok(day.places.filter(id => planner.place(id).area === 'outside').length <= 1);
+        assert.ok(!(day.places.includes('hermitage') && day.places.includes('russian-museum')));
+      }
     }
   }
-  const art = core.createPlan('art');
-  assert.equal(art.days.length, 5);
-  assert.deepEqual(art.days[2].places, ['russian-museum', 'mikhailovsky-garden', 'field-mars']);
-  assert.ok(core.place('yelagin') && core.place('park300'));
-  const saved = core.createPlan();
-  saved.days.push({ id: 'day-6', title: '艺术', places: ['russian-museum'] }, { id: 'day-7', title: '海边', places: ['yelagin', 'park300'] });
-  saved.selectedDay = 'day-7';
-  saved.selectedPlace = 'park300';
-  const restored = core.restore(saved);
-  assert.equal(restored.days.length, 7);
-  assert.deepEqual(restored.days.map(day => day.places), saved.days.map(day => day.places));
-  assert.equal(restored.selectedDay, saved.selectedDay);
-  assert.equal(restored.selectedPlace, saved.selectedPlace);
+  assert.deepEqual(core.createPlan('four').days[3].places, ['russian-museum', 'mikhailovsky-garden', 'field-mars']);
+});
+
+test('previously saved longer itineraries remain intact after shortening reference routes', () => {
+  for (const planner of [core, moscowCore]) {
+    const saved = planner.createPlan('four');
+    saved.days.push({ id: 'day-5', title: '自由安排', places: [] }, { id: 'day-6', title: '自由安排', places: [] });
+    saved.selectedDay = 'day-6';
+    const restored = planner.restore(saved);
+    assert.equal(restored.days.length, 6);
+    assert.deepEqual(restored.days.map(day => day.places), saved.days.map(day => day.places));
+    assert.equal(restored.selectedDay, saved.selectedDay);
+  }
 });
 
 test('optional travel dates persist and roll forward across itinerary days', () => {
@@ -50,7 +55,7 @@ test('every place exposes visit preparation information for the detail card and 
     }
   }
   assert.match(moscowCore.visitDetails(moscowCore.place('msk-armed-cathedral')).hours, /08:00/);
-  assert.match(moscowCore.exportHtml(moscowCore.createPlan('slow')), /门票 \/ 预约/);
+  assert.match(moscowCore.exportHtml(moscowCore.createPlan('four')), /门票 \/ 预约/);
 });
 test('moving a place between days preserves other visits and the prior plan', () => {
   const before = core.createPlan();
@@ -100,7 +105,7 @@ test('Yandex place links and embeds preserve the selected venue or exact branch'
   assert.deepEqual(link.searchParams.get('rtext').split('~'), data.places.slice(0, 2).map(p => p.latLng.join(',')));
 });
 test('offline export includes every selected place and safely escapes saved titles', () => {
-  const plan = core.createPlan('art');
+  const plan = core.createPlan('four');
   plan.days[0].title = '<script>alert("test")</script>';
   const html = core.exportHtml(plan);
   assert.ok(!html.includes('<script>'));
@@ -112,7 +117,7 @@ test('offline export includes every selected place and safely escapes saved titl
 });
 
 test('whole-day navigation preserves every stop, its order, and the chosen travel mode', () => {
-  const plan = core.createPlan('art');
+  const plan = core.createPlan('four');
   const places = plan.days[1].places.map(core.place);
   const url = new URL(core.routeUrl(places, 'walking'));
   assert.equal(url.hostname, 'yandex.ru');
@@ -250,11 +255,11 @@ test('old day preferences migrate to map display without losing visits or forcin
   const old = core.createPlan();
   old.days[0].travelMode = 'driving';
   old.days[1].travelMode = 'walking';
-  old.days[4].travelMode = 'transit';
+  old.days.push({ id: 'day-4', title: '旧行程', places: [], travelMode: 'transit' });
   const restored = core.restore(old);
   assert.equal(core.mapMode(restored.days[0]), 'overview');
   assert.equal(core.mapMode(restored.days[1]), 'walking');
-  assert.equal(core.mapMode(restored.days[4]), 'overview');
+  assert.equal(core.mapMode(restored.days[3]), 'overview');
   assert.equal(core.legMode(restored.days[0], core.place('bronze'), core.place('isaac')), 'walking');
   assert.ok(restored.days.every(day => !('travelMode' in day)));
   assert.deepEqual(restored.days.map(d => d.places), old.days.map(d => d.places));
@@ -284,11 +289,13 @@ test('Yandex links explicitly choose walking or transit and preserve provider co
 });
 
 test('offline handbooks preserve every leg and the chosen Yandex mode, with both alternatives', () => {
-  const plan = core.setLegMode(core.createPlan(), 'day-2', 'kazan', 'blood', 'transit');
+  const before = core.createPlan();
+  before.days[1].places = ['books', 'kazan', 'blood'];
+  const plan = core.setLegMode(before, 'day-2', 'kazan', 'blood', 'transit');
   const html = core.exportHtml(plan);
   assert.doesNotMatch(html, /Google|google\.com\/maps|maps\.google|OpenStreetMap|Leaflet/);
-  assert.ok(html.includes('Yandex 公交／地铁'));
-  assert.ok(html.includes('Yandex 步行'));
+  assert.ok(html.includes('地图 公交／地铁'));
+  assert.ok(html.includes('地图 步行'));
   for (const day of plan.days) {
     for (let i = 1; i < day.places.length; i++) {
       const from = core.place(day.places[i - 1]);
@@ -319,6 +326,7 @@ test('nearby central sights default to walking in both directions while outer tr
 
 test('per-leg choices persist and remain attached to their endpoints after reordering', () => {
   const before = core.createPlan();
+  before.days[1].places = ['books', 'kazan', 'blood'];
   const snapshot = JSON.stringify(before);
   const from = core.place('kazan'), to = core.place('blood');
   const changed = core.setLegMode(before, 'day-2', from.id, to.id, 'transit');
@@ -380,7 +388,7 @@ test('a food stop can recur on separate days and removal only affects the chosen
 
 test('dining suggestions match planned sights without assigning city meals to a suburban-only day', () => {
   const plan = core.createPlan();
-  assert.deepEqual(core.diningSuggestions(plan.days[2]), []);
+  assert.deepEqual(core.diningSuggestions({ id: 'suburban', places: ['peterhof'] }), []);
   const suggestions = core.diningSuggestions(plan.days[0]);
   assert.ok(suggestions.some(item => item.place.id === 'food-teremok-morskaya'));
   for (const {place, afterId} of suggestions) {
@@ -440,16 +448,18 @@ test('city cores keep their catalogues, initial selections and storage keys sepa
       assert.ok(ids.every(id => cityCore.place(id)));
     }
   }
-  const slow = moscowCore.createPlan('slow');
-  assert.equal(slow.days.length, 5);
+  const slow = moscowCore.createPlan('four');
+  assert.equal(slow.days.length, 4);
   assert.ok(!slow.days.flatMap(d => d.places).includes('msk-armed-cathedral'));
-  const extended = moscowCore.createPlan('extended');
-  assert.deepEqual(extended.days.flatMap(d => d.places).sort(), moscow.attractions.map(p => p.id).sort());
+  const extended = moscowCore.createPlan('four');
+  assert.ok(extended.days.flatMap(d => d.places).includes('msk-vdnh'));
+  assert.ok(moscowCore.place('msk-armed-cathedral'));
   assert.deepEqual(moscowCore.diningSuggestions(slow.days[0]), []);
 });
 
 test('legacy Petersburg plans preserve custom visits and preferences without being restored as Moscow', () => {
   let legacy = core.assign(core.createPlan('short'), 'food-volchek-nevsky', 'day-1', 'start');
+  legacy.days[1].places = ['books', 'kazan', 'blood'];
   legacy = core.setMapMode(legacy, 'day-2', 'walking');
   legacy = core.setLegMode(legacy, 'day-2', 'kazan', 'blood', 'transit');
   legacy.selectedDay = 'day-2';
@@ -512,7 +522,9 @@ test('new walking clusters and Moscow cross-city trips generate explicit Yandex 
 });
 
 test('Moscow offline exports use the correct city and retain all visits, sources and navigation', () => {
-  const plan = moscowCore.createPlan('extended');
+  let plan = moscowCore.createPlan('four');
+  plan = moscowCore.addDay(plan);
+  plan = moscowCore.assign(plan, 'msk-armed-cathedral', plan.days.at(-1).id);
   const html = moscowCore.exportHtml(plan);
   assert.ok(html.includes('<title>我的莫斯科行程 · 去俄看看</title>'));
   assert.ok(html.includes('<h1>我的莫斯科行程</h1>'));

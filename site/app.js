@@ -19,7 +19,6 @@
   const cityHistories = { spb: [], moscow: [] };
   let history = cityHistories[data.city.id];
   let filter = 'all';
-  let foodFilter = 'all';
   let query = '';
   let mappedUrl = '';
   let mapView = 'day';
@@ -35,7 +34,7 @@
       if (shared) {
         let hasExisting = false;
         try { hasExisting = Boolean(localStorage.getItem(storageKey)); } catch (_) {}
-        if (!hasExisting || window.confirm('这是一份分享行程，是否载入？载入后会保存到当前浏览器。')) return shared;
+        if (!hasExisting || window.confirm('这是一份分享行程，是否载入？载入后会加入当前行程。')) return shared;
       }
     }
     try { restored = core.restore(JSON.parse(localStorage.getItem(storageKey))); } catch (_) { saveAvailable = false; }
@@ -55,26 +54,24 @@
   }
   function renderCity() {
     const city = data.city;
-    const hasFood = data.foodPlaces.length > 0;
-    document.title = '去俄看看 · 我的' + city.shortName + '行程';
-    $('city-label').textContent = city.name + ' · ' + city.englishName;
-    $('page-title').innerHTML = esc(city.shortName) + '，<em>按你的节奏走。</em>';
-    $('intro-copy').textContent = city.id === 'moscow' ? '从红场、画廊和河岸开始，也可以把一天留给莫斯科郊外。' : '从宫殿、街巷和河岸开始，把想去的地方排进自己的每一天。';
+    document.title = '去俄看看';
+    $('city-label').textContent = city.name;
+    $('page-title').textContent = '去俄看看';
+    $('intro-copy').textContent = city.id === 'moscow' ? '从参考路线出发，轻松打造属于你的俄罗斯行程。探索莫斯科的街巷，感受红场与河岸的故事。' : '从参考路线出发，轻松打造属于你的俄罗斯行程。探索圣彼得堡的浪漫，感受莫斯科的磅礴。';
     $('city-edition').textContent = city.edition;
     $('city-tagline').textContent = city.tagline;
-    $('city-summary').textContent = data.attractions.length + ' 个地点' + (hasFood ? ' · ' + data.foodPlaces.length + ' 处餐饮' : '') + ' · 选一座城市，开始安排';
+    $('city-summary').textContent = data.attractions.length + ' 个地点 · 选一座城市，开始安排';
     $('hero-place-count').textContent = data.attractions.length;
-    $('hero-food-count').textContent = hasFood ? data.foodPlaces.length : '—';
-    $('hero-food-label').textContent = hasFood ? '处餐饮' : '餐饮待补';
+    $('hero-route-count').textContent = Object.keys(data.presets).length;
+    $('hero-route-label').textContent = '份参考路线';
     document.querySelectorAll('[data-city]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.city === city.id)));
     $('preset-select').innerHTML = Object.entries(data.presets).map(([id, preset]) => '<option value="' + id + '"' + (id === 'classic' ? ' selected' : '') + '>' + esc(preset.label) + '</option>').join('');
     renderPresetDescription();
-    $('category-filters').innerHTML = data.categories.map(([id, label]) => '<button type="button" data-category="' + id + '" aria-pressed="' + (id === filter) + '">' + esc(label) + '</button>').join('');
-    $('food-filters').innerHTML = data.foodTypes.map(([id, label]) => '<button type="button" data-food-type="' + id + '" aria-pressed="' + (id === foodFilter) + '">' + esc(label) + '</button>').join('');
-    $('place-search').placeholder = hasFood ? '搜索景点、餐厅、俄语名' : '搜索景点、俄语名';
-    $('place-search').setAttribute('aria-label', hasFood ? '搜索景点与餐饮' : '搜索莫斯科景点');
-    $('catalog-note').textContent = hasFood ? '挑选景点或餐饮，在地图下方加入当天。' : '挑选想去的景点，在地图下方加入当天。';
-    document.querySelector('[data-view="discover"]').textContent = hasFood ? '景点与餐饮' : '选景点';
+    $('category-filters').innerHTML = data.categories.filter(([id]) => id !== 'food').map(([id, label]) => '<button type="button" data-category="' + id + '" aria-pressed="' + (id === filter) + '">' + esc(label) + '</button>').join('');
+    $('place-search').placeholder = '搜索景点、俄语名';
+    $('place-search').setAttribute('aria-label', '搜索景点');
+    $('catalog-note').textContent = '挑选想去的景点，在地图下方加入当天。';
+    document.querySelector('[data-view="discover"]').textContent = '景点';
   }
   function renderPresetDescription() {
     const description = data.presets[$('preset-select').value]?.description;
@@ -91,16 +88,17 @@
     storageKey = data.city.storageKey;
     history = cityHistories[id];
     plan = loadPlan();
-    filter = 'all'; foodFilter = 'all'; query = '';
+    filter = 'all'; query = '';
     $('place-search').value = '';
     mapView = 'day';
     if ($('info-dialog').open) $('info-dialog').close();
+    if ($('place-dialog').open) $('place-dialog').close();
     try {
       const url = new URL(window.location.href);
       url.searchParams.set('city', id);
       window.history.replaceState(null, '', url);
     } catch (_) {}
-    renderCity(); save(); render();
+    renderCity(); save(); render(); switchView('overview');
     toast('已切换到' + data.city.name + '，两座城市的行程分别保存');
   }
   function toast(message) {
@@ -121,19 +119,21 @@
     if (message) toast(message);
   }
   function switchView(view) {
+    if (view === 'overview') delete $('workspace').dataset.activeView;
+    else $('workspace').dataset.activeView = view;
     document.querySelectorAll('[data-view]').forEach(button => {
       const active = button.dataset.view === view;
       button.classList.toggle('active', active);
       button.setAttribute('aria-pressed', String(active));
     });
-    document.querySelectorAll('[data-pane]').forEach(pane => pane.classList.toggle('pane-active', pane.dataset.pane === view));
+    document.querySelectorAll('[data-pane]').forEach(pane => pane.classList.toggle('pane-active', view === 'overview' || pane.dataset.pane === view));
   }
   function selectPlace(id, context = 'catalog') {
     if (!core.place(id)) return;
     plan.selectedPlace = id;
     mapView = context === 'route' ? 'day' : 'place';
     save(); renderCatalog(); renderDetail(); renderMap();
-    if (window.matchMedia('(max-width:760px)').matches) switchView('map');
+    if (!$('place-dialog').open) $('place-dialog').showModal();
   }
   function selectDay(id) {
     const day = plan.days.find(d => d.id === id);
@@ -155,13 +155,13 @@
   function setYandexNavigationLink(link) {
     const day = selectedDay();
     const places = day.places.map(core.place);
-    const label = places.length === 1 ? 'Yandex 查看位置 ↗' : link.id === 'map-external' ? 'Yandex 导航' : 'Yandex 分段导航';
+    const label = places.length === 1 ? '查看地图位置 ↗' : link.id === 'map-external' ? '地图导航' : '分段导航';
     setNavigationLink(link, label, !places.length ? null : places.length === 1 ? core.yandexPlaceUrl(places[0]) : '#segment-navigation', places.length > 1 ? 'segments' : '');
   }
   function setWalkingNavigationLink(link) {
     const places = selectedDay().places.map(core.place);
     const groups = core.routeGroups(places, 'walking');
-    setNavigationLink(link, (places.length === 1 ? '查看位置' : '整天步行导航') + ' · Yandex ↗', !places.length ? null : groups.length === 1 ? groups[0].url : '#whole-day-navigation', groups.length > 1 ? 'walking' : '');
+    setNavigationLink(link, (places.length === 1 ? '查看位置' : '整天步行导航') + ' ↗', !places.length ? null : groups.length === 1 ? groups[0].url : '#whole-day-navigation', groups.length > 1 ? 'walking' : '');
   }
   function renderMap() {
     const day = selectedDay();
@@ -180,41 +180,39 @@
     $('place-map').hidden = empty;
     $('map-empty').hidden = !empty;
     $('reload-map').disabled = empty;
-    $('map-heading-name').textContent = dayView ? '第 ' + (plan.days.indexOf(day) + 1) + ' 天 · ' + places.length + ' 个地点 · Yandex' + (places.length > 1 ? ' ' + (overview ? '位置总览' : '步行') : '') : p.name + ' · Yandex';
+    $('map-heading-name').textContent = dayView ? '第 ' + (plan.days.indexOf(day) + 1) + ' 天 · ' + places.length + ' 个地点 · 地图' + (places.length > 1 ? ' ' + (overview ? '位置总览' : '步行') : '') : p.name + ' · 地图';
     if (dayView && mode === 'walking') setWalkingNavigationLink($('map-external'));
-    else if (dayView) setNavigationLink($('map-external'), '在 Yandex 打开 ↗', core.overviewUrl(places));
-    else setNavigationLink($('map-external'), 'Yandex 地图 ↗', core.yandexPlaceUrl(p));
+    else if (dayView) setNavigationLink($('map-external'), '在地图中打开 ↗', core.overviewUrl(places));
+    else setNavigationLink($('map-external'), '地图位置 ↗', core.yandexPlaceUrl(p));
     if (url !== mappedUrl) {
       clearTimeout(mapLoadTimer);
       $('map-loading').hidden = !url;
-      $('map-loading-label').textContent = dayView ? '正在加载 Yandex 当天地图…' : '正在加载 Yandex 地点位置…';
+      $('map-loading-label').textContent = dayView ? '正在加载当天地图…' : '正在加载地点位置…';
       $('place-map').setAttribute('aria-busy', String(Boolean(url)));
       if (url) {
         $('place-map').src = url;
-        mapLoadTimer = setTimeout(() => { $('map-loading-label').textContent = 'Yandex 地图加载较慢，可刷新或点击下方链接在 Yandex 打开。'; }, 12000);
+        mapLoadTimer = setTimeout(() => { $('map-loading-label').textContent = '地图加载较慢，可刷新或点击下方链接打开。'; }, 12000);
       } else $('place-map').removeAttribute('src');
       mappedUrl = url;
     }
-    $('place-map').title = dayView ? '第 ' + (plan.days.indexOf(day) + 1) + ' 天：' + places.map(p => p.name).join(' → ') + '，Yandex ' + (overview || places.length < 2 ? '位置地图' : '步行路线') : p.name + '在 Yandex 地图上的位置';
+    $('place-map').title = dayView ? '第 ' + (plan.days.indexOf(day) + 1) + ' 天：' + places.map(p => p.name).join(' → ') + '，' + (overview || places.length < 2 ? '位置地图' : '步行路线') : p.name + '的位置地图';
     $('map-route-preview').hidden = !dayView || !places.length;
     $('map-route-preview').innerHTML = places.map((stop, i) => '<li><button type="button" data-map-place="' + stop.id + '" aria-pressed="' + (stop.id === plan.selectedPlace) + '" aria-label="查看第 ' + (i + 1) + ' 站：' + esc(stop.name) + '"><span class="map-stop-number">' + (i + 1) + '</span>' + esc(stop.name) + '</button></li>').join('');
-    $('map-help-text').textContent = empty ? '加入地点后，地图会自动更新。' : !dayView ? 'Yandex 标记地点位置；看完可切回当天行程。' : places.length === 1 ? '当天只有一站，可在 Yandex 中选择出发地。' : grouped ? '地图标出全部地点；整天步行导航按连续分组打开，保留每一站。' : overview ? '地图标出当天各站，下方按游览顺序排列；可切换步行路线或打开分段导航。' : 'Yandex 紫色虚线为步行道路；交通时间不含游览和用餐。';
+    $('map-help-text').textContent = empty ? '加入地点后，地图会自动更新。' : !dayView ? '地图标记地点位置；看完可切回当天行程。' : places.length === 1 ? '当天只有一站，可在地图中选择出发地。' : grouped ? '地图标出全部地点；整天步行导航按连续分组打开，保留每一站。' : overview ? '地图标出当天各站，下方按游览顺序排列；可切换步行路线或打开分段导航。' : '紫色虚线为步行道路；交通时间不含游览停留。';
   }
   function renderCatalog() {
     const normal = text => text.normalize('NFKC').toLowerCase().replace(/\s/g, '');
     const needle = normal(query);
-    const places = data.places.filter(p => (filter === 'all' || p.category === filter) && (filter !== 'food' || foodFilter === 'all' || p.foodType === foodFilter) && normal([p.name,p.ru,p.address,p.tag,p.branch || '',p.aliases || '',aliases[p.id] || ''].join(' ')).includes(needle));
-    $('food-filters').hidden = filter !== 'food';
-    $('food-catalog-note').hidden = filter !== 'food';
-    $('food-filters').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.foodType === foodFilter)));
-    $('place-count').textContent = places.length + ' / ' + data.places.length + ' 处';
+    const places = data.attractions.filter(p => (filter === 'all' || p.category === filter) && normal([p.name,p.ru,p.address,p.tag,p.aliases || '',aliases[p.id] || ''].join(' ')).includes(needle));
+    $('place-count').textContent = places.length + ' / ' + data.attractions.length + ' 处';
     $('place-list').innerHTML = places.length ? places.map(p => {
       const dayIndex = assignment(p.id);
       const active = p.id === plan.selectedPlace;
-      const isFood = p.kind === 'food';
-      const dayCount = plan.days.filter(d => d.places.includes(p.id)).length;
-      const assignedLabel = isFood && dayCount > 1 ? dayCount + ' 天用餐' : '第 ' + (dayIndex+1) + ' 天';
-      return '<button type="button" class="place-item' + (active ? ' active' : '') + (isFood ? ' food-item' : '') + '" data-place="' + p.id + '" aria-pressed="' + active + '"><span class="place-initial" aria-hidden="true">' + (isFood ? '食' : esc(p.name[0])) + '</span><span class="place-item-copy"><span class="place-item-name">' + esc(p.name) + '</span><span class="place-item-tag">' + esc(p.tag) + '</span>' + (isFood ? '<span class="place-item-branch">' + esc(p.branch) + '</span>' : '') + '</span>' + (dayIndex >= 0 ? '<span class="place-day">' + assignedLabel + '</span>' : '') + '</button>';
+      const assignedLabel = '第 ' + (dayIndex+1) + ' 天';
+      const summary = p.intro || p.routeHint || '';
+      const image = window.PLACE_IMAGES?.[p.id];
+      const thumbnail = image ? '<img class="place-thumbnail" src="' + esc(image.src) + '" alt="" loading="lazy" decoding="async">' : '<span class="place-initial" aria-hidden="true">' + esc(p.name[0]) + '</span>';
+      return '<button type="button" class="place-item place-' + esc(p.category || 'other') + (active ? ' active' : '') + '" data-place="' + p.id + '" aria-pressed="' + active + '">' + thumbnail + '<span class="place-item-copy"><span class="place-item-name">' + esc(p.name) + '</span><span class="place-item-tag">' + esc(p.tag) + '</span><span class="place-item-intro">' + esc(summary) + '</span></span>' + (dayIndex >= 0 ? '<span class="place-day">' + assignedLabel + '</span>' : '') + '</button>';
     }).join('') : '<p class="empty-state">没有找到这个地方。<br>试试中文名、俄语名或其他分类。</p>';
   }
   function renderDetail() {
@@ -223,28 +221,24 @@
     const dayIndex = plan.days.indexOf(day);
     const existing = assignment(p.id);
     const sameDay = existing === dayIndex;
-    const isFood = p.kind === 'food';
-    const action = sameDay ? '已在第 ' + (dayIndex+1) + ' 天' : existing >= 0 && !isFood ? '移到第 ' + (dayIndex+1) + ' 天' : '＋ 加入第 ' + (dayIndex+1) + ' 天';
-    const afterId = isFood ? day.places.filter(id => p.pairWith.includes(id)).at(-1) : null;
-    const position = isFood && !sameDay ? '<div class="meal-placement"><label for="meal-position">放在行程哪里</label><select id="meal-position"><option value=""' + (!afterId ? ' selected' : '') + '>当天行程末尾</option><option value="start">当天第一站</option>' + day.places.map(id => '<option value="' + id + '"' + (id === afterId ? ' selected' : '') + '>' + esc(core.place(id).name) + '之后</option>').join('') + '</select></div>' : '';
-    const foodInfo = isFood ? '<div class="food-address"><strong>' + esc(p.branch) + '</strong><span lang="ru">' + esc(p.address) + '</span></div><p class="food-route-hint">' + esc(p.routeHint) + '</p>' : '';
+    const action = sameDay ? '已在第 ' + (dayIndex+1) + ' 天' : existing >= 0 ? '移到第 ' + (dayIndex+1) + ' 天' : '＋ 加入第 ' + (dayIndex+1) + ' 天';
     const visit = core.visitDetails(p);
-    const visitCard = '<section class="visit-card" aria-label="' + (isFood ? '营业信息' : '门票与开放信息') + '"><div class="visit-card-heading"><h3>' + (isFood ? '营业信息' : '门票与开放') + '</h3><span class="visit-status ' + esc(visit.statusTone) + '">' + esc(visit.status) + '</span></div><dl><div><dt>门票 / 预约</dt><dd>' + esc(visit.ticket) + '</dd></div><div><dt>开放 / 营业</dt><dd>' + esc(visit.hours) + '</dd></div></dl><a class="visit-link" href="' + esc(visit.url) + '" target="_blank" rel="noopener noreferrer">' + esc(visit.label) + ' ↗</a>' + (visit.checkedAt ? '<span class="visit-checked">信息核对：' + esc(visit.checkedAt) + '</span>' : '') + '</section>';
-    const moreSource = (isFood && p.website ? '<a class="source-link" href="' + esc(p.website) + '" target="_blank" rel="noopener noreferrer">品牌官网 ↗</a>' : '') + (p.checkedAt ? '<span class="source-checked">资料核对：' + esc(p.checkedAt) + '</span>' : '');
-    $('place-detail').innerHTML = '<div class="detail-top"><span class="detail-tag' + (isFood ? ' food-tag' : '') + '">' + esc(p.tag) + '</span><span class="detail-duration">' + esc(p.time) + '</span></div><h2>' + esc(p.name) + '</h2><p class="russian-name" lang="ru">' + esc(p.ru) + '</p><p class="detail-intro">' + esc(p.intro) + '</p>' + foodInfo + '<p class="detail-note">' + esc(p.note) + '</p>' + visitCard + position + '<div class="detail-actions"><button id="assign-place" class="button" type="button"' + (sameDay ? ' disabled' : '') + '>' + action + '</button><button id="copy-address" class="button outline" type="button">复制俄语地址</button></div><div class="detail-sources"><a class="source-link" href="' + esc(p.source) + '" target="_blank" rel="noopener noreferrer">' + esc(p.sourceLabel) + ' ↗</a>' + moreSource + '</div>';
+    const image = window.PLACE_IMAGES?.[p.id];
+    const detailImage = image ? '<img class="detail-image" src="' + esc(image.src) + '" alt="' + esc(p.name) + '" decoding="async">' : '';
+    const imageSource = image ? '<a href="' + esc(image.source) + '" target="_blank" rel="noopener noreferrer">图片：' + esc(image.credit) + ' · ' + esc(image.license) + '</a>' : '';
+    $('place-dialog-title').textContent = p.name;
+    $('place-detail').innerHTML = '<div class="place-card-heading">' + detailImage + '<div><p class="russian-name" lang="ru">' + esc(p.ru) + '</p><div class="detail-top"><span class="detail-tag">' + esc(p.tag) + '</span><span class="detail-duration">' + esc(p.time) + '</span></div><p class="detail-intro">' + esc(p.intro || '') + '</p></div></div>' +
+      '<dl class="place-facts"><div><dt>开放时间</dt><dd>' + esc(visit.hours) + '</dd></div><div><dt>门票与预约</dt><dd>' + esc(visit.ticket) + '</dd></div><div><dt>地址</dt><dd lang="ru">' + esc(p.address) + '</dd></div></dl>' +
+      '<a class="place-official" href="' + esc(visit.url) + '" target="_blank" rel="noopener noreferrer">' + esc(visit.label) + ' ↗</a>' + (visit.checkedAt ? '<span class="visit-checked">核对日期：' + esc(visit.checkedAt) + '</span>' : '') +
+      '<div class="detail-actions"><button id="assign-place" class="button" type="button"' + (sameDay ? ' disabled' : '') + '>' + action + '</button><button id="detail-show-map" class="button outline" type="button">在地图上查看</button><button id="copy-address" class="text-button" type="button">复制地址</button></div>' +
+      '<details class="place-extra"><summary>游览提醒与图片来源</summary><p>' + esc(p.note || '') + '</p>' + imageSource + '</details>';
   }
-  function renderDining() {
-    $('day-dining').hidden = data.foodPlaces.length === 0;
-    if (!data.foodPlaces.length) { $('day-dining').innerHTML = ''; return; }
-    const day = selectedDay();
-    const suggestions = core.diningSuggestions(day);
-    $('day-dining').innerHTML = '<div class="dining-heading"><h3>搭配当天的餐饮</h3><button class="text-button" type="button" data-browse-food>查看全部 ' + data.foodPlaces.length + ' 处</button></div>' + (suggestions.length ? '<p class="dining-intro">按当天地点挑出的用餐选择，可自行决定是否加入。</p><div class="dining-cards">' + suggestions.map(({place: p, afterId}) => '<article class="dining-card"><span class="food-type-label">' + esc(p.tag) + '</span><button class="dining-name" type="button" data-food-detail="' + p.id + '">' + esc(p.name) + '</button><p class="dining-branch">' + esc(p.branch) + '</p><p>' + esc(p.routeHint) + '</p><button class="dining-add" type="button" data-food-add="' + p.id + '" data-after="' + afterId + '">＋ 加在' + esc(core.place(afterId).name) + '后</button></article>').join('') + '</div>' : '<p class="dining-intro">这一天尚无适合搭配的餐饮建议。可以从「吃什么」挑选出发前、途中或回城后的用餐点。</p>');
-  }
+
   function dayDate(index) {
     if (!core.validStartDate(plan.startDate)) return '';
     const [year, month, day] = plan.startDate.split('-').map(Number);
     const date = new Date(Date.UTC(year, month - 1, day + index));
-    return date.getUTCFullYear() + '-' + String(date.getUTCMonth() + 1).padStart(2, '0') + '-' + String(date.getUTCDate()).padStart(2, '0');
+    return date.getUTCFullYear() + '年' + String(date.getUTCMonth() + 1).padStart(2, '0') + '月' + String(date.getUTCDate()).padStart(2, '0') + '日';
   }
   function renderTrip() {
     const day = selectedDay();
@@ -253,15 +247,16 @@
     $('trip-start-date').value = core.validStartDate(plan.startDate) ? plan.startDate : '';
     const dayOptions = plan.days.map((d,i) => '<option value="' + d.id + '"' + (d.id === day.id ? ' selected' : '') + '>第 ' + (i+1) + (dayDate(i) ? ' · ' + dayDate(i) : '') + ' · ' + esc(d.title) + '</option>').join('');
     $('day-select').innerHTML = dayOptions;
+    $('day-tabs').innerHTML = plan.days.map((d, i) => '<button type="button" data-day-id="' + esc(d.id) + '" aria-pressed="' + (d.id === day.id) + '"><strong>第 ' + (i + 1) + ' 天</strong><span>' + esc(d.title) + '</span></button>').join('');
     $('map-day-select').innerHTML = dayOptions;
-    $('day-kicker').textContent = 'DAY ' + String(dayIndex+1).padStart(2, '0') + (dayDate(dayIndex) ? ' · ' + dayDate(dayIndex) : '');
+    $('day-kicker').textContent = '第 ' + String(dayIndex+1).padStart(2, '0') + ' 天' + (dayDate(dayIndex) ? ' · ' + dayDate(dayIndex) : '');
     $('day-title').textContent = day.title;
     $('delete-day').disabled = plan.days.length === 1;
     $('add-day').disabled = plan.days.length >= 14;
     $('route-list').innerHTML = day.places.length ? day.places.map((id,i) => {
       const p = core.place(id);
-      return '<li class="route-item' + (p.kind === 'food' ? ' meal-stop' : '') + '"><span class="route-number">' + String(i+1).padStart(2,'0') + '</span><div><button class="route-place" type="button" data-route-action="select" data-id="' + id + '">' + esc(p.name) + '</button>' + (p.kind === 'food' ? '<span class="route-branch">用餐 · ' + esc(p.branch) + '</span>' : '') + '<span class="route-time">' + esc(p.time) + '</span><div class="route-item-controls"><button type="button" data-route-action="up" data-id="' + id + '" aria-label="将' + esc(p.name) + '上移"' + (i === 0 ? ' disabled' : '') + '>↑ 上移</button><button type="button" data-route-action="down" data-id="' + id + '" aria-label="将' + esc(p.name) + '下移"' + (i === day.places.length-1 ? ' disabled' : '') + '>↓ 下移</button><button class="remove-place" type="button" data-route-action="remove" data-id="' + id + '" aria-label="从行程移除' + esc(p.name) + '">移除</button></div></div></li>';
-    }).join('') : '<li class="empty-state">这一天，留给你的选择。<br>' + (data.foodPlaces.length ? '挑一个景点或用餐点加入吧。' : '挑一个景点加入吧。') + '</li>';
+      return '<li class="route-item">' + (window.PLACE_IMAGES?.[id] ? '<img class="route-thumbnail" src="' + esc(window.PLACE_IMAGES[id].src) + '" alt="" loading="lazy">' : '') + '<span class="route-number">' + String(i+1).padStart(2,'0') + '</span><div><button class="route-place" type="button" data-route-action="select" data-id="' + id + '">' + esc(p.name) + '</button><span class="route-time">' + esc(p.time) + '</span><div class="route-item-controls"><button type="button" data-route-action="up" data-id="' + id + '" aria-label="将' + esc(p.name) + '上移"' + (i === 0 ? ' disabled' : '') + '>↑ 上移</button><button type="button" data-route-action="down" data-id="' + id + '" aria-label="将' + esc(p.name) + '下移"' + (i === day.places.length-1 ? ' disabled' : '') + '>↓ 下移</button><button class="remove-place" type="button" data-route-action="remove" data-id="' + id + '" aria-label="从行程移除' + esc(p.name) + '">移除</button></div></div></li>';
+    }).join('') : '<li class="empty-state">这一天，留给你的选择。<br>挑一个景点加入吧。</li>';
     let note = '可以调整顺序，留点时间慢慢走。';
     if (data.city.id === 'moscow') {
       if (day.places.includes('msk-vdnh')) note = day.places.length > 1 ? 'ВДНХ 园区很大，建议单独留出半天到一天。与市中心景点组合时，请给地铁往返留足时间。' : '先选想看的展馆，再决定园内步行范围。喷泉和其他季节活动请按具体出行日期复核。';
@@ -277,17 +272,17 @@
     else if (day.places.includes('russian-museum')) note = day.places.includes('hermitage') ? '冬宫和俄罗斯博物馆都适合留出较长参观时间，建议分开两天。花园和战神广场可作为俄罗斯博物馆之后的散步。' : '俄罗斯博物馆主馆建议留出 2–3 小时，再到米哈伊洛夫花园和战神广场散步。主馆与花园的开放安排分别确认。';
     else if (day.places.includes('mariinsky')) note = '剧院之夜请按票面场馆和开演时间安排，给晚餐和交通留些余地。';
     else if (day.places.includes('park300') && day.places.includes('yelagin')) note = '岛屿与海边之间需要交通衔接。遇到风雨，可以只保留其中一处。';
-    else if (day.places.includes('blood') && day.places.includes('mikhailovsky-garden') && day.places.includes('field-mars')) note = '滴血教堂、米哈伊洛夫花园与战神广场可以步行串联。教堂入内、书店和咖啡馆按兴趣取舍；想看俄罗斯博物馆，可替换部分停留，给馆内留出 2–3 小时。';
-    else if (day.places.filter(id => core.place(id).kind !== 'food').length > 4) note = '今天安排得比较充实。可以把一两个地点移到其他天，走得更从容。';
+    else if (day.places.includes('blood') && day.places.includes('mikhailovsky-garden') && day.places.includes('field-mars')) note = '滴血教堂、米哈伊洛夫花园与战神广场可以步行串联。教堂入内、花园和河岸散步按兴趣取舍；想看俄罗斯博物馆，可替换部分停留，给馆内留出 2–3 小时。';
+    else if (day.places.length > 4) note = '今天安排得比较充实。可以把一两个地点移到其他天，走得更从容。';
     $('route-note').textContent = note;
     $('trip-map-mode').value = core.mapMode(day);
     $('trip-map-mode').disabled = day.places.length === 0;
-    $('navigation-note').textContent = day.places.length === 1 ? '在 Yandex 中点击路线，选择出发地与步行或公交。' : '相近地点可串联步行；每段都可选择步行或公交／地铁。';
+    $('navigation-note').textContent = day.places.length === 1 ? '在地图中点击路线，选择出发地与步行或公交。' : '相近地点可串联步行；每段都可选择步行或公交／地铁。';
     setYandexNavigationLink($('navigate-day'));
     setWalkingNavigationLink($('navigate-full-day'));
   }
   function render() {
-    renderCatalog(); renderDetail(); renderTrip(); renderMap(); renderDining();
+    renderCatalog(); renderDetail(); renderTrip(); renderMap();
     $('undo-button').disabled = history.length === 0;
   }
   function openDialog(title, content) {
@@ -296,13 +291,16 @@
     $('info-dialog').showModal();
   }
   function showAbout() {
-    const foodHelp = data.foodPlaces.length ? '<li>在「吃什么」里挑选正餐、日常便餐、中餐、面包早餐或小吃，选择放在哪一站之后；同一家店可以安排在不同天。</li><li>「搭配当天的餐饮」提供可选的用餐建议，加入后地图与导航会一起更新。</li>' : '';
-    openDialog('一份可以改动的城市手册', '<p>' + esc(data.city.introduction) + '先选一份参考路线，再把每一天改成自己喜欢的样子。</p><ul><li>从页面上方切换圣彼得堡与莫斯科，两座城市的行程分别保存，改动也分别撤销。</li><li>Yandex 当天总览标出全部地点，地图下方按游览顺序排列中文地名。</li>' + foodHelp + '<li>打开「Yandex 分段导航」，每段都能选择步行或公交／地铁。相近地点先选步行，具体道路、站点和班次在 Yandex 中查看。</li><li>地图也能切换成整天步行路线；上移、下移地点后会同步更新，改动可以撤销。较长路线按连续分组打开。</li></ul><p>行程和每段出行选择保存在当前浏览器中。导出的手册可离线查看文字和俄语地址；地图导航需要联网。</p>');
+    openDialog('一份可以改动的城市手册', '<p>' + esc(data.city.introduction) + '先选一份参考路线，再把每一天改成自己喜欢的样子。</p><ul><li>从页面上方切换圣彼得堡与莫斯科，两座城市的行程分别管理，改动也分别撤销。</li><li>当天总览标出全部地点，地图下方按游览顺序排列中文地名。</li><li>打开「分段导航」，每段都能选择步行或公交／地铁；具体道路、站点和班次可在地图中查看。</li><li>地图也能切换成整天步行路线；上移、下移地点后会同步更新，改动可以撤销。较长路线按连续分组打开。</li></ul><p>导出的手册可离线查看文字和俄语地址；地图导航需要联网。</p>');
   }
   function showSources() {
-    const foodInfo = data.foodPlaces.length ? '<p>餐饮信息核对于 2026-09-14，来源包括店方官网、Пассаж 商场、Афиша 和 2GIS。每条固定具体分店；价格、菜单及营业状态以门店当日信息为准。</p>' : '';
     const sources = data.sources.map(([label, url]) => '<li><a href="' + esc(url) + '" target="_blank" rel="noopener noreferrer">' + esc(label) + '</a></li>').join('');
-    openDialog(data.city.name + ' · 信息与来源', '<p>景点详情提供场馆官网或公开资料入口，新增资料核对于 2026-09-14。开放日期、临时限制、门票和演出请按具体出行日期复核。</p>' + foodInfo + '<p>停留时长与参考路线是规划建议，请结合兴趣、住宿和预约时间调整。</p><ul>' + sources + '</ul><p>地图与导航由 Yandex Maps 提供。当天总览标出全部地点，中文列表显示游览顺序；切换步行路线后，紫色虚线表示实际步行道路。位置标记用于找到场馆、建筑或街区，实际入口请在到达前确认。步行初选依据常见散步组合，具体道路、站点与班次在 Yandex 中查看。地图服务需要联网；加载不畅时可使用地图下方的 Yandex 链接。</p>');
+    const imageCredits = Object.entries(window.PLACE_IMAGES || {}).map(([id, image]) => {
+      const place = data.places.find(item => item.id === id);
+      return place ? '<li>' + esc(place.name) + '：' + esc(image.credit) + ' · <a href="' + esc(image.source) + '" target="_blank" rel="noopener noreferrer">' + esc(image.license) + '</a></li>' : '';
+    }).filter(Boolean).join('');
+    const imageInfo = imageCredits ? '<h3 class="sources-subheading">展示图片</h3><ul>' + imageCredits + '</ul>' : '';
+    openDialog(data.city.name + ' · 信息与来源', '<p>景点详情提供场馆官网或公开资料入口，新增资料核对于 2026-09-14。开放日期、临时限制、门票和演出请按具体出行日期复核。</p><p>停留时长与参考路线是规划建议，请结合兴趣、住宿和预约时间调整。</p><ul>' + sources + '</ul>' + imageInfo + '<p>地图与导航由地图服务提供。当天总览标出全部地点，中文列表显示游览顺序；切换步行路线后，紫色虚线表示实际步行道路。位置标记用于找到场馆、建筑或街区，实际入口请在到达前确认。步行初选依据常见散步组合，具体道路、站点与班次在地图中查看。地图服务需要联网；加载不畅时可使用地图下方的链接。</p>');
   }
   function showFullNavigation() {
     const day = selectedDay();
@@ -311,10 +309,10 @@
     const groups = core.routeGroups(places, 'walking');
     let content = '<p>第 ' + (plan.days.indexOf(day) + 1) + ' 天 · ' + places.length + ' 站 · 步行。当天地图仍会显示全部地点。</p>';
     if (groups.length > 1) {
-      content += '<p>较长行程按每组最多 8 站打开 Yandex。以下 ' + groups.length + ' 组按顺序衔接，相邻组共用一站，覆盖完整行程。</p>';
+      content += '<p>较长行程按每组最多 8 站打开地图。以下 ' + groups.length + ' 组按顺序衔接，相邻组共用一站，覆盖完整行程。</p>';
     }
     content += groups.map((g, i) => '<a class="navigation-leg" href="' + esc(g.url) + '" target="_blank" rel="noopener noreferrer"><span><strong>' + (groups.length > 1 ? '第 ' + (i + 1) + ' 组 · 第 ' + g.start + '–' + g.end + ' 站' : '打开整天路线') + '</strong><small>' + g.places.map(p => esc(p.name)).join(' → ') + '</small></span><span>↗</span></a>').join('');
-    content += '<p>需要分段选择步行或公交时，可打开「Yandex 分段导航」。</p>';
+    content += '<p>需要分段选择步行或公交时，可打开「分段导航」。</p>';
     openDialog('整天步行导航', content);
   }
   function handleDayNavigation(event) {
@@ -328,7 +326,7 @@
   }
   function navigationHint(day, from, to) {
     const suggested = core.suggestedLegMode(from, to);
-    if (core.legMode(day, from, to) !== suggested) return '已按你的选择设置；打开 Yandex 后也能切换。';
+    if (core.legMode(day, from, to) !== suggested) return '已按你的选择设置；打开地图后也能切换。';
     return suggested === 'walking' ? '这段可以串联步行，也可按体力和天气调整。' : '可先比较公交／地铁方案，也能改选步行。';
   }
   function showNavigation() {
@@ -339,9 +337,9 @@
       const from = places[i];
       const mode = core.legMode(day, from, to);
       const routeLabel = esc(from.name + '到' + to.name);
-      return '<div class="transport-leg" data-from="' + from.id + '" data-to="' + to.id + '"><h3><span>第 ' + (i + 1) + ' 段 · ' + (i + 1) + ' → ' + (i + 2) + '</span>' + esc(from.name) + ' → ' + esc(to.name) + '</h3><p class="transport-hint">' + navigationHint(day, from, to) + '</p><div class="transport-actions"><label><span class="sr-only">' + routeLabel + '的出行方式</span><select data-leg-mode><option value="walking"' + (mode === 'walking' ? ' selected' : '') + '>步行</option><option value="transit"' + (mode === 'transit' ? ' selected' : '') + '>公交／地铁</option></select></label><a class="yandex-navigation" href="' + esc(core.yandexUrl(from, to, mode)) + '" aria-label="' + routeLabel + '，Yandex 导航" target="_blank" rel="noopener noreferrer">Yandex 导航 ↗</a></div></div>';
+      return '<div class="transport-leg" data-from="' + from.id + '" data-to="' + to.id + '"><h3><span>第 ' + (i + 1) + ' 段 · ' + (i + 1) + ' → ' + (i + 2) + '</span>' + esc(from.name) + ' → ' + esc(to.name) + '</h3><p class="transport-hint">' + navigationHint(day, from, to) + '</p><div class="transport-actions"><label><span class="sr-only">' + routeLabel + '的出行方式</span><select data-leg-mode><option value="walking"' + (mode === 'walking' ? ' selected' : '') + '>步行</option><option value="transit"' + (mode === 'transit' ? ' selected' : '') + '>公交／地铁</option></select></label><a class="yandex-navigation" href="' + esc(core.yandexUrl(from, to, mode)) + '" aria-label="' + routeLabel + '，地图导航" target="_blank" rel="noopener noreferrer">地图导航 ↗</a></div></div>';
     }).join('');
-    openDialog('第 ' + (plan.days.indexOf(day) + 1) + ' 天 · 分段导航', '<p>相近地点先选步行，每段都能单独调整。打开 Yandex 后，也能切换步行、公交和出发时间。</p>' + links);
+    openDialog('第 ' + (plan.days.indexOf(day) + 1) + ' 天 · 分段导航', '<p>相近地点先选步行，每段都能单独调整。打开地图后，也能切换步行、公交和出发时间。</p>' + links);
   }
   function exportPlan() {
     const blob = new Blob([core.exportHtml(plan)], { type: 'text/html;charset=utf-8' });
@@ -359,13 +357,7 @@
     $('share-url').value = url;
     const canvas = $('share-qr');
     const note = $('share-qr-note');
-    let localPreview = false;
-    try {
-      const shareUrl = new URL(url);
-      localPreview = shareUrl.protocol === 'file:' || ['localhost', '127.0.0.1', '::1'].includes(shareUrl.hostname);
-    } catch (_) {}
-    $('share-dialog').toggleAttribute('data-local-preview', localPreview);
-    note.textContent = localPreview ? '当前是本地预览地址，其他设备无法直接打开；发布到 GitHub Pages 后请重新生成二维码。' : '扫描二维码打开这份行程。';
+    note.textContent = '扫描二维码打开这份行程。';
     canvas.hidden = false;
     if (window.QRCode?.toCanvas) {
       window.QRCode.toCanvas(canvas, url, { width: 220, margin: 2, errorCorrectionLevel: 'M', color: { dark: '#26352d', light: '#faf7ee' } }, error => {
@@ -397,32 +389,9 @@
     if (!button) return;
     chooseCategory(button.dataset.category);
   });
-  $('food-filters').addEventListener('click', event => {
-    const button = event.target.closest('[data-food-type]');
-    if (!button) return;
-    foodFilter = button.dataset.foodType;
-    renderCatalog();
-  });
-  $('day-dining').addEventListener('click', event => {
-    const browse = event.target.closest('[data-browse-food]');
-    if (browse) {
-      query = ''; $('place-search').value = '';
-      foodFilter = 'all'; chooseCategory('food'); switchView('discover');
-      document.querySelector('.discover-pane').scrollIntoView({ block: 'start' });
-      $('food-filters').querySelector('button').focus({ preventScroll: true });
-      return;
-    }
-    const detail = event.target.closest('[data-food-detail]');
-    if (detail) { selectPlace(detail.dataset.foodDetail); return; }
-    const add = event.target.closest('[data-food-add]');
-    if (add) {
-      const next = core.assign(plan, add.dataset.foodAdd, plan.selectedDay, add.dataset.after);
-      next.selectedPlace = add.dataset.foodAdd;
-      commit(next, '已将用餐点加入当天，地图与导航已更新');
-    }
-  });
   $('place-search').addEventListener('input', event => { query = event.target.value; renderCatalog(); });
   $('place-list').addEventListener('click', event => { const button = event.target.closest('[data-place]'); if (button) selectPlace(button.dataset.place); });
+  $('day-tabs').addEventListener('click', event => { const button = event.target.closest('[data-day-id]'); if (button) selectDay(button.dataset.dayId); });
   ['day-select', 'map-day-select'].forEach(id => $(id).addEventListener('change', event => selectDay(event.target.value)));
   $('trip-start-date').addEventListener('change', event => commit(core.setStartDate(plan, event.target.value), event.target.value ? '已设置出发日期' : '已清除出发日期'));
   ['map-display-mode', 'trip-map-mode'].forEach(id => $(id).addEventListener('change', event => commit(core.setMapMode(plan, plan.selectedDay, event.target.value))));
@@ -442,7 +411,7 @@
     const button = event.target.closest('[data-map-place]');
     if (!button) return;
     selectPlace(button.dataset.mapPlace, 'route');
-    $('map-route-preview').querySelector('[data-map-place="' + button.dataset.mapPlace + '"]')?.focus({ preventScroll: true });
+
   });
   $('map-pick-place').addEventListener('click', () => { switchView('discover'); $('place-search').focus(); });
   $('view-day-map').addEventListener('click', () => { mapView = 'day'; renderMap(); switchView('map'); document.querySelector('.map-pane').scrollIntoView({ block: 'start' }); });
@@ -451,14 +420,23 @@
   $('map-external').addEventListener('click', handleDayNavigation);
   $('navigate-full-day').addEventListener('click', handleDayNavigation);
   $('navigate-day').addEventListener('click', handleDayNavigation);
+  $('close-place-dialog').addEventListener('click', () => $('place-dialog').close());
+  $('place-dialog').addEventListener('click', event => {
+    if (event.target !== $('place-dialog')) return;
+    const r = $('place-dialog').getBoundingClientRect();
+    if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) $('place-dialog').close();
+  });
   $('place-detail').addEventListener('click', async event => {
     const button = event.target.closest('button');
     if (!button) return;
+    if (button.id === 'detail-show-map') {
+      $('place-dialog').close(); mapView = 'place'; renderMap(); switchView('map');
+      $('workspace').scrollIntoView({ block: 'start' });
+    }
     if (button.id === 'assign-place') {
       const existing = assignment(plan.selectedPlace);
       const p = core.place(plan.selectedPlace);
-      const position = p.kind === 'food' ? $('meal-position')?.value : undefined;
-      commit(core.assign(plan, plan.selectedPlace, plan.selectedDay, position), (existing >= 0 && p.kind !== 'food' ? '已移动到' : '已加入') + '第 ' + (plan.days.indexOf(selectedDay())+1) + ' 天');
+      commit(core.assign(plan, plan.selectedPlace, plan.selectedDay), (existing >= 0 ? '已移动到' : '已加入') + '第 ' + (plan.days.indexOf(selectedDay())+1) + ' 天');
     }
     if (button.id === 'copy-address') {
       const p = core.place(plan.selectedPlace);
@@ -493,6 +471,15 @@
   document.querySelectorAll('.export-button').forEach(button => button.addEventListener('click', exportPlan));
   document.querySelectorAll('[data-share-plan]').forEach(button => button.addEventListener('click', openShareDialog));
   document.querySelectorAll('[data-view]').forEach(button => button.addEventListener('click', () => switchView(button.dataset.view)));
+  document.querySelectorAll('[data-nav-view]').forEach(link => link.addEventListener('click', event => {
+    event.preventDefault();
+    switchView(link.dataset.navView);
+    $('workspace').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }));
+  document.querySelector('.header-icon-button')?.addEventListener('click', () => {
+    $('place-search').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    $('place-search').focus({ preventScroll: true });
+  });
   $('about-button').addEventListener('click', showAbout);
   $('sources-button').addEventListener('click', showSources);
   $('close-dialog').addEventListener('click', () => $('info-dialog').close());
@@ -504,5 +491,5 @@
     catch (_) {}
   });
   $('info-dialog').addEventListener('click', event => { if (event.target === $('info-dialog')) { const r = $('info-dialog').getBoundingClientRect(); if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) $('info-dialog').close(); } });
-  renderCity(); save(); render();
+  renderCity(); save(); render(); switchView('overview');
 })();

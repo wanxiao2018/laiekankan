@@ -4,7 +4,7 @@
   else root.VISIT_DATA = visit;
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   const spb = {
-    hermitage: { status: '需购票 · 按日期确认', statusTone: 'ticket', ticket: '馆内参观按票种和入场安排购票；部分项目可能需要预约。', hours: '开放时间、入口和临时安排以官网为准。', label: '查看冬宫官网' },
+    hermitage: { status: '分时段购票', statusTone: 'ticket', ticket: '主馆按日期和入场时段购票，可在官网预订；闭馆前 1 小时停止售票。', hours: '主馆：周三、周四、周日 11:00–18:00；周二、周五、周六 11:00–20:00。周一、1 月 1 日及 5 月 9 日闭馆。临时调整以官网为准。', url: 'https://www.hermitagemuseum.org/visitus?lng=en', label: '官网 · 开放时间与购票', checkedAt: '2026-09-19' },
     peterhof: { status: '季节与票务 · 按日期确认', statusTone: 'ticket', ticket: '宫殿、花园和季节项目的票务可能分别安排。', hours: '喷泉、花园和水上交通有季节性，出发前确认。', label: '查看夏宫官网' },
     catherine: { status: '需购票 · 按日期确认', statusTone: 'ticket', ticket: '宫殿、琥珀厅和花园按所选项目查看票务与预约。', hours: '开放日期、入口和参观时段以皇村官网为准。', label: '查看皇村官网' },
     kazan: { status: '开放安排 · 按日期确认', statusTone: 'check', ticket: '教堂外部和礼拜安排不同，内部参观以现场信息为准。', hours: '宗教活动可能影响参观时段，出发前确认。', label: '查看教堂官网' },

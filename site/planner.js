@@ -107,7 +107,7 @@
   function exportPlace(p) {
     const visit = visitDetails(p);
     const food = p.kind === 'food';
-    return '<li><h3>' + (food ? '用餐 · ' : '') + escape(p.name) + '</h3>' + (food ? '<p>' + escape(p.branch) + ' · ' + escape(p.tag) + '</p>' : '') + '<p lang="ru">' + escape(p.ru) + '<br>' + escape(p.address) + '</p><p>' + escape(p.time) + ' · ' + escape(p.note) + '</p>' + (food ? '<p>' + escape(p.routeHint) + '</p>' : '') + '<div class="visit-info"><strong>访问准备</strong><p>状态：' + escape(visit.status) + '</p><p>门票 / 预约：' + escape(visit.ticket) + '</p><p>开放 / 营业：' + escape(visit.hours) + '</p><a href="' + escape(visit.url) + '">' + escape(visit.label) + ' ↗</a>' + (visit.checkedAt ? '<small> · 信息核对：' + escape(visit.checkedAt) + '</small>' : '') + '</div><p><a href="' + escape(p.source) + '">' + escape(p.sourceLabel) + '</a>' + (p.checkedAt ? ' · 资料核对：' + escape(p.checkedAt) : '') + '</p><a href="' + escape(yandexPlaceUrl(p)) + '">Yandex 查看位置</a></li>';
+    return '<li><h3>' + (food ? '用餐 · ' : '') + escape(p.name) + '</h3>' + (food ? '<p>' + escape(p.branch) + ' · ' + escape(p.tag) + '</p>' : '') + '<p lang="ru">' + escape(p.ru) + '<br>' + escape(p.address) + '</p><p>' + escape(p.time) + ' · ' + escape(p.note) + '</p>' + (food ? '<p>' + escape(p.routeHint) + '</p>' : '') + '<div class="visit-info"><strong>访问准备</strong><p>状态：' + escape(visit.status) + '</p><p>门票 / 预约：' + escape(visit.ticket) + '</p><p>开放 / 营业：' + escape(visit.hours) + '</p><a href="' + escape(visit.url) + '">' + escape(visit.label) + ' ↗</a>' + (visit.checkedAt ? '<small> · 信息核对：' + escape(visit.checkedAt) + '</small>' : '') + '</div><p><a href="' + escape(p.source) + '">' + escape(p.sourceLabel) + '</a>' + (p.checkedAt ? ' · 资料核对：' + escape(p.checkedAt) : '') + '</p><a href="' + escape(yandexPlaceUrl(p)) + '">查看地图位置</a></li>';
   }
   function mapMode(day) {
     if (['overview', 'walking'].includes(day?.mapMode)) return day.mapMode;
@@ -124,6 +124,11 @@
     const next = copy(plan);
     next.startDate = validStartDate(startDate) ? startDate : '';
     return next;
+  }
+  function displayDate(value) {
+    if (!validStartDate(value)) return '';
+    const [year, month, day] = value.split('-');
+    return year + '年' + month + '月' + day + '日';
   }
   function suggestedLegMode(from, to) {
     const walkable = from.walkWith?.includes(to.id) || to.walkWith?.includes(from.id) || data.walkingGroups.some(group => group.includes(from.id) && group.includes(to.id));
@@ -180,7 +185,7 @@
       const fixed = value => Number(value.toFixed(6));
       params.set('ll', [fixed((west + east) / 2), fixed((south + north) / 2)].join(','));
       // spn lets the widget fit both extents to its own desktop/mobile size.
-      // Padding leaves room for pins and Yandex controls around the edges.
+      // 为地图边缘的标记和控件预留内边距。
       params.set('spn', [fixed(Math.max((east - west) * 1.8, 0.006)), fixed(Math.max((north - south) * 1.8, 0.004))].join(','));
     }
     return params;
@@ -231,26 +236,26 @@
   function escape(value) { return String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
   function exportHtml(plan) {
     const title = escape('我的' + data.city.shortName + '行程');
-    const dateText = validStartDate(plan.startDate) ? ' · 出发日 ' + escape(plan.startDate) : '';
+    const dateText = validStartDate(plan.startDate) ? ' · 出发日 ' + escape(displayDate(plan.startDate)) : '';
     const sections = plan.days.map((day, i) => {
       const places = day.places.map(place);
       let navigation = '';
       if (places.length) {
         navigation = '<p>' + places.length + ' 个地点</p>';
         if (places.length > 1) {
-          navigation += '<p>分段导航：按需选择步行或公交／地铁，打开 Yandex 后也能切换。每段排在前面的方式与你在网站中的选择一致。</p>';
+          navigation += '<p>分段导航：按需选择步行或公交／地铁，打开地图后也能切换。每段排在前面的方式与你在网站中的选择一致。</p>';
           navigation += places.slice(1).map((to, j) => {
             const from = places[j];
             const mode = legMode(day, from, to);
             const alternative = mode === 'walking' ? 'transit' : 'walking';
-            return '<div class="transport-leg"><h3>第 ' + (j + 1) + ' 段 · ' + escape(from.name) + ' → ' + escape(to.name) + '</h3><div class="navigation"><a href="' + escape(yandexUrl(from, to, mode)) + '">Yandex ' + modeLabel(mode) + ' ↗</a><a href="' + escape(yandexUrl(from, to, alternative)) + '">Yandex ' + modeLabel(alternative) + ' ↗</a></div></div>';
+            return '<div class="transport-leg"><h3>第 ' + (j + 1) + ' 段 · ' + escape(from.name) + ' → ' + escape(to.name) + '</h3><div class="navigation"><a href="' + escape(yandexUrl(from, to, mode)) + '">地图 ' + modeLabel(mode) + ' ↗</a><a href="' + escape(yandexUrl(from, to, alternative)) + '">地图 ' + modeLabel(alternative) + ' ↗</a></div></div>';
           }).join('');
           const groups = routeGroups(places, 'walking');
-          navigation += '<p><a href="' + escape(overviewUrl(places)) + '">Yandex 查看当天全部地点 ↗</a></p><details><summary>整天步行导航 · Yandex</summary><p>按当天顺序连接全部地点，仅用于全程步行。</p>';
+          navigation += '<p><a href="' + escape(overviewUrl(places)) + '">查看当天全部地点 ↗</a></p><details><summary>整天步行导航</summary><p>按当天顺序连接全部地点，仅用于全程步行。</p>';
           if (groups.length > 1) navigation += '<p>长路线分为 ' + groups.length + ' 组连续导航，保留全部地点。相邻组共用一站，请按顺序打开。</p>';
           navigation += '<div class="navigation">' + groups.map((g, j) => '<a href="' + escape(g.url) + '">' + (groups.length === 1 ? '整天步行导航' : '第 ' + (j + 1) + ' 组 · 第 ' + g.start + '–' + g.end + ' 站') + ' ↗</a>').join('') + '</div></details>';
         } else {
-          navigation += '<p><a href="' + escape(yandexPlaceUrl(places[0])) + '">Yandex 查看位置 ↗</a> · 在地图中选择出发地和出行方式。</p>';
+          navigation += '<p><a href="' + escape(yandexPlaceUrl(places[0])) + '">查看地图位置 ↗</a> · 在地图中选择出发地和出行方式。</p>';
         }
       }
       return '<section><h2>第 ' + (i + 1) + ' 天 · ' + escape(day.title) + '</h2>' + navigation + (places.length ? '<ol>' + places.map(exportPlace).join('') + '</ol>' : '<p>这一天留给自由探索。</p>') + '</section>';
