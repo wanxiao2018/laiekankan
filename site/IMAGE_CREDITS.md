@@ -1,14 +1,14 @@
 # 景点展示图片来源
 
-本目录中的景点展示图片来自 Wikimedia Commons，页面运行时使用本地副本。图片许可和作者信息也会在网站的“信息与来源”对话框中显示。
+本目录中的景点展示图片来自公开图片资料，页面运行时使用本地副本。图片来源会在网站的“信息与来源”对话框中显示；从圣彼得堡旅游信息站抓取的图片仅保留本地副本，页面不会跳转到该站点的景点列表页。
 
 | 景点 | 作者 | 许可 | 原始页面 |
 | --- | --- | --- | --- |
-| 冬宫 | Jorge Láscar | CC BY 2.0 | [Winter Palace (21134849722).jpg](https://commons.wikimedia.org/wiki/File:Winter_Palace_(21134849722).jpg) |
+| 冬宫 | 圣彼得堡旅游信息站（本地副本） | 来源站点图片 | `vp-hermitage.png`，抓取自公开景点卡片 |
 | 滴血教堂 | Steven Pavlov | CC BY-SA 3.0 | [The Church of the Savior on Spilled Blood.jpg](https://commons.wikimedia.org/wiki/File:The_Church_of_the_Savior_on_Spilled_Blood.jpg) |
 | 喀山教堂 | Wolfgang Moroder | CC BY-SA 3.0 | [Kazan Cathedral Saint Petersburg.jpg](https://commons.wikimedia.org/wiki/File:Kazan_Cathedral_Saint_Petersburg.jpg) |
-| 以撒教堂 | Florstein | CC BY-SA 4.0 | [Saint Isaac's Cathedral in SPB.jpeg](https://commons.wikimedia.org/wiki/File:Saint_Isaac%27s_Cathedral_in_SPB.jpeg) |
-| 彼得保罗要塞 | Florstein | CC BY-SA 4.0 | [Peter & Paul fortress in SPB 03.jpg](https://commons.wikimedia.org/wiki/File:Peter_%26_Paul_fortress_in_SPB_03.jpg) |
+| 以撒教堂 | 圣彼得堡旅游信息站（本地副本） | 来源站点图片 | `vp-isaac.jpg`，抓取自公开景点卡片 |
+| 彼得保罗要塞 | 圣彼得堡旅游信息站（本地副本） | 来源站点图片 | `vp-fortress.png`，抓取自公开景点卡片 |
 | 夏宫 | Perituss | CC0 | [Peterhof 2013 16.jpg](https://commons.wikimedia.org/wiki/File:Peterhof_2013_16.jpg) |
 | 叶宫 | Florstein | CC BY-SA 4.0 | [Catherine Palace in Tsarskoe Selo.jpg](https://commons.wikimedia.org/wiki/File:Catherine_Palace_in_Tsarskoe_Selo.jpg) |
 | 阿芙乐尔号 | Александровы АГ | CC BY-SA 4.0 | [0196Gb. Saint Petersburg. Cruiser “Aurora”.jpg](https://commons.wikimedia.org/wiki/File:0196Gb._Saint_Petersburg._Cruiser_%22Aurora%22.jpg) |
@@ -19,8 +19,8 @@
 | 特列季亚科夫画廊 | Wmpearl | CC0 | [Tretyakov Gallery, Moscow, main building .JPG](https://commons.wikimedia.org/wiki/File:Tretyakov_Gallery,_Moscow,_main_building_.JPG) |
 | 全俄展览中心 | Voytek S | CC BY-SA 2.5 | [Moscow - VDNH Central Pavillon.jpg](https://commons.wikimedia.org/wiki/File:Moscow_-_VDNH_Central_Pavillon.jpg) |
 | 老阿尔巴特街 | Florstein | CC BY-SA 4.0 | [Arbat Street in MSK.jpg](https://commons.wikimedia.org/wiki/File:Arbat_Street_in_MSK.jpg) |
-| 青铜骑士像 | Godot13 | CC BY-SA 3.0 | [The Bronze Horseman (St. Petersburg, Russia).jpg](https://commons.wikimedia.org/wiki/File:The_Bronze_Horseman_(St._Petersburg,_Russia).jpg) |
-| 书之家 | Wolfgang Moroder | CC BY-SA 3.0 | [Singer House Saint Petersburg main facade.jpg](https://commons.wikimedia.org/wiki/File:Singer_House_Saint_Petersburg_main_facade.jpg) |
+| 青铜骑士像 | 圣彼得堡旅游信息站（本地副本） | 来源站点图片 | `vp-bronze.jpg`，抓取自公开景点卡片 |
+| 书之家 | 圣彼得堡旅游信息站（本地副本） | 来源站点图片 | `vp-books.jpg`，抓取自公开景点卡片 |
 | 马林斯基剧院 | A.Savin | CC BY-SA 3.0 | [Spb 06-2012 MariinskyTheatre.jpg](https://commons.wikimedia.org/wiki/File:Spb_06-2012_MariinskyTheatre.jpg) |
 | 俄罗斯博物馆 | Andrey Korzun | CC BY-SA 4.0 | [2018 SPb Mikhailovsky Palace 06.jpg](https://commons.wikimedia.org/wiki/File:2018_SPb_Mikhailovsky_Palace_06.jpg) |
 | 米哈伊洛夫花园 | Andrey Korchagin | CC BY 2.0 | [Rossi's Pavilion in Mikhailovsky Garden](https://commons.wikimedia.org/wiki/File:Rossi%27s_Pavilion_in_Mikhailovsky_Garden._Saint-Petersburg._1825..jpg) |

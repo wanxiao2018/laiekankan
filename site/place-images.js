@@ -1,11 +1,11 @@
 (function (root) {
   root.PLACE_IMAGES = {
     hermitage: {
-      src: 'assets/places/hermitage.jpg',
-      source: 'https://commons.wikimedia.org/wiki/File:Winter_Palace_(21134849722).jpg',
-      credit: 'Jorge Láscar',
-      license: 'CC BY 2.0',
-      licenseUrl: 'https://creativecommons.org/licenses/by/2.0/'
+      src: 'assets/places/vp-hermitage.png',
+      source: 'assets/places/vp-hermitage.png',
+      credit: '圣彼得堡旅游信息站（本地副本）',
+      license: '本地图片副本',
+      licenseUrl: ''
     },
     blood: {
       src: 'assets/places/blood.jpg',
@@ -22,18 +22,18 @@
       licenseUrl: 'https://creativecommons.org/licenses/by-sa/3.0/'
     },
     isaac: {
-      src: 'assets/places/isaac.jpg',
-      source: 'https://commons.wikimedia.org/wiki/File:Saint_Isaac%27s_Cathedral_in_SPB.jpeg',
-      credit: 'Florstein',
-      license: 'CC BY-SA 4.0',
-      licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/'
+      src: 'assets/places/vp-isaac.jpg',
+      source: 'assets/places/vp-isaac.jpg',
+      credit: '圣彼得堡旅游信息站（本地副本）',
+      license: '本地图片副本',
+      licenseUrl: ''
     },
     fortress: {
-      src: 'assets/places/fortress.jpg',
-      source: 'https://commons.wikimedia.org/wiki/File:Peter_%26_Paul_fortress_in_SPB_03.jpg',
-      credit: 'Florstein',
-      license: 'CC BY-SA 4.0',
-      licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/'
+      src: 'assets/places/vp-fortress.png',
+      source: 'assets/places/vp-fortress.png',
+      credit: '圣彼得堡旅游信息站（本地副本）',
+      license: '本地图片副本',
+      licenseUrl: ''
     },
     peterhof: {
       src: 'assets/places/peterhof.jpg',
@@ -106,18 +106,18 @@
       licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/'
     },
     bronze: {
-      src: 'assets/places/bronze.jpg',
-      source: 'https://commons.wikimedia.org/wiki/File:The_Bronze_Horseman_(St._Petersburg,_Russia).jpg',
-      credit: 'Godot13',
-      license: 'CC BY-SA 3.0',
-      licenseUrl: 'https://creativecommons.org/licenses/by-sa/3.0/'
+      src: 'assets/places/vp-bronze.jpg',
+      source: 'assets/places/vp-bronze.jpg',
+      credit: '圣彼得堡旅游信息站（本地副本）',
+      license: '本地图片副本',
+      licenseUrl: ''
     },
     books: {
-      src: 'assets/places/books.jpg',
-      source: 'https://commons.wikimedia.org/wiki/File:Singer_House_Saint_Petersburg_main_facade.jpg',
-      credit: 'Wolfgang Moroder',
-      license: 'CC BY-SA 3.0',
-      licenseUrl: 'https://creativecommons.org/licenses/by-sa/3.0/'
+      src: 'assets/places/vp-books.jpg',
+      source: 'assets/places/vp-books.jpg',
+      credit: '圣彼得堡旅游信息站（本地副本）',
+      license: '本地图片副本',
+      licenseUrl: ''
     },
     mariinsky: {
       src: 'assets/places/mariinsky.jpg',
